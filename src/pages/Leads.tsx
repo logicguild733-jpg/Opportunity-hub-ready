@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import LeadCard from "../LeadCard";
-import leadsEmptyImg from "../empty-leads.png"; // <-- fixed path for Vercel
+const leadsEmptyImg = "https://via.placeholder.com/300?text=No+Leads";
 
 export default function Leads() {
   const [leads, setLeads] = useState<any[]>([]);
