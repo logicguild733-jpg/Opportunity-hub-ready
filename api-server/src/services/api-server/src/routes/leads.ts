@@ -8,21 +8,20 @@ const supabase = createClient(
   "sb_publishable_exYuiUhOVuWEyPqROu4p5A_gCWtb89S"
 );
 
-// Plan limits (simple, no bug)
+// simple limits (safe fallback)
 const PLAN_LIMITS = {
   basic: 15,
   premium: 30,
-  gold: 100
+  gold: 100,
 };
 
 router.get("/", async (req, res) => {
   try {
-    const user = req.user || {};
-    const userPlan = user.plan || "basic";
+    // ⚡ TEMP: no auth dependency (prevents crashes)
+    const userPlan = "basic";
+    const limit = PLAN_LIMITS[userPlan];
 
-    const maxLeads = PLAN_LIMITS[userPlan] || 15;
-
-    // 🔥 Get fresh leads (last 10 days)
+    // 🔥 last 10 days fresh leads
     const tenDaysAgo = new Date();
     tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
 
@@ -31,26 +30,25 @@ router.get("/", async (req, res) => {
       .select("*")
       .gte("created_at", tenDaysAgo.toISOString())
       .order("created_at", { ascending: false })
-      .limit(maxLeads);
+      .limit(limit);
 
     if (error) {
       console.error("Supabase error:", error);
       return res.json([]);
     }
 
-    // ✅ Return clean leads
     const formatted = (data || []).map((lead) => ({
       title: lead.client_name,
       description: lead.description,
-      link: "#",
+      link: lead.link || "#",
       tags: lead.skill,
-      isLocked: false
+      isLocked: false,
     }));
 
-    res.json(formatted);
+    return res.json(formatted);
   } catch (err) {
-    console.error("Leads endpoint error:", err.message);
-    res.json([]);
+    console.error("Leads endpoint error:", err);
+    return res.json([]);
   }
 });
 
