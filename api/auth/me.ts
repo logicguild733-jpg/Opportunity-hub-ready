@@ -20,19 +20,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const token = auth.replace("Bearer ", "");
     const decoded = jwt.verify(token, JWT_SECRET) as any;
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("users")
       .select("*")
       .eq("id", decoded.id)
       .single();
 
+    if (error || !data) {
+      return res.status(401).json({ error: "User not found" });
+    }
+
     return res.json({
       id: data.id,
       email: data.email,
       name: data.name,
-      role: data.role || "user"
+      role: data.role || "user",
+
+      // 🔥 FIXED ADMIN RULE (stable)
+      isAdmin:
+        data.role === "admin" ||
+        data.email === "logicguild733@gmail.com",
     });
-  } catch {
+  } catch (err) {
     return res.status(401).json({ error: "Invalid token" });
   }
 }
