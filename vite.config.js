@@ -6,17 +6,10 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"), // allows "@/..." imports
+      "@": path.resolve(__dirname, "src"),
     },
   },
   build: {
     outDir: "dist",
-    rollupOptions: {
-      input: path.resolve(__dirname, "index.html"), // ensures main.tsx is found
-    },
-  },
-  server: {
-    port: 3000,
-    open: true, // optional: opens browser in dev
   },
 });
