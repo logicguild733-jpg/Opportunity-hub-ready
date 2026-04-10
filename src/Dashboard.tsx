@@ -18,19 +18,17 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [showAll] = useState(true);
 
-  // ================= ADMIN CHECK =================
+  // ================= ADMIN =================
   const isAdmin =
     user?.role === "admin" ||
     user?.email === "logicguild733@gmail.com";
 
   // ================= PLAN =================
   const plan = (user as any)?.subscription_plan || "basic";
-
   const limit = getPlanLimit(plan);
 
   const unlockLimit =
-    plan === "gold" ? null :
-    plan === "premium" ? 30 : 15;
+    limit === 100 ? null : limit;
 
   // ================= LEADS =================
   const usage =
@@ -46,21 +44,23 @@ export default function Dashboard() {
   const filteredLeads = useMemo(() => {
     if (!activeLeads) return [];
 
+    const q = search.toLowerCase().trim();
+
     return activeLeads.filter((lead: any) => {
       const text = `
-        ${lead.client_name}
-        ${lead.description}
-        ${lead.service_needed}
+        ${lead.client_name || ""}
+        ${lead.description || ""}
+        ${lead.service_needed || ""}
         ${lead.industry || ""}
         ${lead.city || ""}
         ${lead.country || ""}
       `.toLowerCase();
 
-      return text.includes(search.toLowerCase());
+      return text.includes(q);
     });
   }, [activeLeads, search]);
 
-  // ================= INACTIVE CHECK =================
+  // ================= INACTIVE =================
   const isInactive = user?.subscription_status === "inactive";
 
   if (isInactive) {
@@ -96,45 +96,6 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* 🔥 EARNING PSYCHOLOGY */}
-      <div className="bg-green-50 border border-green-200 p-4 rounded-2xl space-y-2">
-        <p className="text-sm font-semibold text-green-700">
-          🚀 Start small, grow fast
-        </p>
-
-        <p className="text-sm text-green-600">
-          Many users get their first client within 10–15 leads.
-        </p>
-
-        {unlockLimit !== null && (
-          <p className="text-sm text-green-700">
-            You’ve unlocked <b>{usage?.used || 0}</b> / <b>{unlockLimit}</b> leads.
-          </p>
-        )}
-      </div>
-
-      {/* 🔥 UPGRADE BANNER */}
-      {unlockLimit !== null && (
-        <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl">
-          <p className="text-sm text-blue-700 font-medium">
-            If 15 leads can get you a client…
-          </p>
-
-          <p className="text-sm text-blue-600">
-            Imagine what 30 or 100 leads can do for your income 💰
-          </p>
-
-          <button
-            onClick={() =>
-              (window.location.href = "mailto:logicguild733@gmail.com")
-            }
-            className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
-          >
-            Upgrade Plan
-          </button>
-        </div>
-      )}
-
       {/* SEARCH */}
       <div className="relative">
         <Search className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
@@ -162,7 +123,7 @@ export default function Dashboard() {
       ) : (
         <div className="grid md:grid-cols-3 gap-4">
           {filteredLeads.map((lead: any, i: number) => (
-            <LeadCard key={i} lead={lead} />
+            <LeadCard key={lead.id || i} lead={lead} />
           ))}
         </div>
       )}
