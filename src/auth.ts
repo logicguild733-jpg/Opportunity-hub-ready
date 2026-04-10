@@ -1,38 +1,50 @@
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
 import { Request, Response, NextFunction } from "express";
 
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString("hex");
+const JWT_SECRET = process.env.JWT_SECRET || "opportunity_hub_secret_key";
 
 export interface JwtPayload {
   id: number;
   email: string;
+  role?: string;
 }
 
+// ================= SIGN TOKEN =================
 export function signToken(payload: JwtPayload): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 }
 
+// ================= VERIFY TOKEN =================
 export function verifyToken(token: string): JwtPayload {
   return jwt.verify(token, JWT_SECRET) as JwtPayload;
 }
 
-export function requireAuth(req: Request, res: Response, next: NextFunction): void {
+// ================= AUTH MIDDLEWARE =================
+export function requireAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
   const authHeader = req.headers.authorization;
   const cookieToken = (req as any).cookies?.token;
 
-  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : cookieToken;
+  const token =
+    authHeader?.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : cookieToken;
 
   if (!token) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
-    const payload = verifyToken(token);
-    (req as any).user = payload;
+    const user = verifyToken(token);
+
+    // attach user to request
+    (req as any).user = user;
+
     next();
   } catch {
-    res.status(401).json({ error: "Invalid or expired token" });
+    return res.status(401).json({ error: "Invalid or expired token" });
   }
 }
