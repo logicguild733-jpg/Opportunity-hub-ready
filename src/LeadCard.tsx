@@ -1,44 +1,57 @@
-import { useState } from "react";
+import { motion } from "framer-motion";
 
-export default function LeadCard({ lead }: { lead: any }) {
-  const [showContact, setShowContact] = useState(false);
-
-  const copyContact = () => {
-    const text = [lead?.contact_email, lead?.contact_phone].filter(Boolean).join(" | ");
-    if (!text) return alert("No contact info");
-
-    // Try clipboard, fallback to prompt
-    navigator.clipboard?.writeText(text)
-      .then(() => alert("Copied!"))
-      .catch(() => prompt("Copy manually:", text));
-  };
-
-  return (
-    <div style={{
-      border: "1px solid #ccc",
-      padding: "15px",
-      borderRadius: "8px",
-      marginBottom: "10px",
-      fontFamily: "Inter, sans-serif"
-    }}>
-      <h3>{lead?.client_name || "No Name"}</h3>
-      <p>{lead?.service_needed || "Service not specified"}</p>
-      <p>{lead?.description || "No description"}</p>
-
-      <button
-        style={{ marginTop: "5px" }}
-        onClick={() => setShowContact(!showContact)}
+export default function LeadCard({ lead }: any) {
+  // 🔒 LOCKED LEAD
+  if (lead?.isLocked) {
+    return (
+      <motion.div
+        className="p-4 border rounded-2xl bg-muted/40 opacity-70"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
       >
-        {showContact ? "Hide Contact" : "Show Contact"}
-      </button>
+        <p className="font-semibold text-lg">🔒 Locked Lead</p>
 
-      {showContact && (
-        <div style={{ marginTop: "5px" }}>
-          {lead?.contact_email && <p>Email: {lead.contact_email}</p>}
-          {lead?.contact_phone && <p>Phone: {lead.contact_phone}</p>}
-          <button onClick={copyContact}>Copy Contact Info</button>
+        <p className="text-sm text-muted-foreground mt-1">
+          Upgrade to view full details and contact this client.
+        </p>
+
+        <p className="text-xs text-muted-foreground mt-3">
+          More opportunities available 🚀
+        </p>
+      </motion.div>
+    );
+  }
+
+  // ✅ NORMAL LEAD
+  return (
+    <motion.div
+      className="p-4 border rounded-2xl bg-background hover:shadow-md transition"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <h3 className="font-semibold text-lg">
+        {lead.client_name || "Client"}
+      </h3>
+
+      <p className="text-sm text-muted-foreground mt-1">
+        {lead.service_needed || lead.tags}
+      </p>
+
+      {lead.description && (
+        <p className="text-sm mt-2 line-clamp-3">
+          {lead.description}
+        </p>
+      )}
+
+      <div className="mt-3 text-xs text-muted-foreground">
+        {lead.country || ""} {lead.city ? `• ${lead.city}` : ""}
+      </div>
+
+      {lead.lead_quality && (
+        <div className="mt-2 text-xs font-semibold">
+          Quality: {lead.lead_quality}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
