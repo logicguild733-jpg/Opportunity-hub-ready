@@ -39,8 +39,8 @@ export default function Dashboard() {
   const plan = (user as any)?.subscription_plan || "basic";
 
   const usage = usageData || (showAll ? allResponse?.usage : matchedResponse?.usage);
-
-  const unlockLimit = getPlanLimit(plan) === 100 ? null : getPlanLimit(plan);
+const limit = getPlanLimit(plan);
+const unlockLimit = limit === 100 ? null : limit;
   const activeLeads = showAll
     ? (allResponse?.leads || [])
     : (matchedResponse?.leads || []);
