@@ -1,9 +1,11 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
+
 import { useLeads, useAllLeads, useLeadUsage } from "@/hooks/use-leads";
 import { useAuthMe } from "@/hooks/use-auth";
-import { LeadCard } from "@/components/LeadCard";
+
+import LeadCard from "@/LeadCard";
 import { Input } from "@/components/ui";
 import { getPlanLimit } from "@/lib/planLimits";
 
@@ -16,16 +18,21 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [showAll] = useState(true);
 
-  // ✅ ADMIN
+  // ================= ADMIN CHECK =================
   const isAdmin =
     user?.role === "admin" ||
     user?.email === "logicguild733@gmail.com";
 
-  // ✅ PLAN
+  // ================= PLAN =================
   const plan = (user as any)?.subscription_plan || "basic";
-  const limit = getPlanLimit(plan);
-  const unlockLimit = limit === 100 ? null : limit;
 
+  const limit = getPlanLimit(plan);
+
+  const unlockLimit =
+    plan === "gold" ? null :
+    plan === "premium" ? 30 : 15;
+
+  // ================= LEADS =================
   const usage =
     usageData || (showAll ? allResponse?.usage : matchedResponse?.usage);
 
@@ -35,17 +42,25 @@ export default function Dashboard() {
 
   const isLoading = showAll ? allLoading : leadsLoading;
 
-  // ✅ SEARCH
+  // ================= SEARCH =================
   const filteredLeads = useMemo(() => {
     if (!activeLeads) return [];
 
     return activeLeads.filter((lead: any) => {
-      const text = `${lead.client_name} ${lead.description} ${lead.service_needed}`.toLowerCase();
+      const text = `
+        ${lead.client_name}
+        ${lead.description}
+        ${lead.service_needed}
+        ${lead.industry || ""}
+        ${lead.city || ""}
+        ${lead.country || ""}
+      `.toLowerCase();
+
       return text.includes(search.toLowerCase());
     });
   }, [activeLeads, search]);
 
-  // ✅ SUBSCRIPTION CHECK
+  // ================= INACTIVE CHECK =================
   const isInactive = user?.subscription_status === "inactive";
 
   if (isInactive) {
@@ -98,7 +113,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* 🔥 SOFT UPGRADE */}
+      {/* 🔥 UPGRADE BANNER */}
       {unlockLimit !== null && (
         <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl">
           <p className="text-sm text-blue-700 font-medium">
@@ -122,10 +137,7 @@ export default function Dashboard() {
 
       {/* SEARCH */}
       <div className="relative">
-        <Search
-          className="absolute left-3 top-2.5 text-muted-foreground"
-          size={16}
-        />
+        <Search className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
         <Input
           className="pl-9"
           placeholder="Search leads..."
