@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [showAll] = useState(true);
 
-  // ================= ADMIN =================
+  // ================= ADMIN CHECK =================
   const isAdmin =
     user?.role === "admin" ||
     user?.email === "logicguild733@gmail.com";
@@ -27,8 +27,8 @@ export default function Dashboard() {
   const plan = (user as any)?.subscription_plan || "basic";
   const limit = getPlanLimit(plan);
 
-  const unlockLimit =
-    limit === 100 ? null : limit;
+  // gold = unlimited
+  const unlockLimit = limit === 100 ? null : limit;
 
   // ================= LEADS =================
   const usage =
@@ -40,7 +40,7 @@ export default function Dashboard() {
 
   const isLoading = showAll ? allLoading : leadsLoading;
 
-  // ================= SEARCH =================
+  // ================= SEARCH FILTER =================
   const filteredLeads = useMemo(() => {
     if (!activeLeads) return [];
 
@@ -56,11 +56,11 @@ export default function Dashboard() {
         ${lead.country || ""}
       `.toLowerCase();
 
-      return text.includes(q);
+      return q === "" || text.includes(q);
     });
   }, [activeLeads, search]);
 
-  // ================= INACTIVE =================
+  // ================= INACTIVE ACCOUNT =================
   const isInactive = user?.subscription_status === "inactive";
 
   if (isInactive) {
@@ -96,6 +96,15 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* PLAN INFO */}
+      <div className="text-sm text-muted-foreground">
+        Plan: <b>{plan}</b> | Limit:{" "}
+        <b>{unlockLimit === null ? "Unlimited" : unlockLimit}</b>
+        {usage?.used !== undefined && (
+          <> | Used: <b>{usage.used}</b></>
+        )}
+      </div>
+
       {/* SEARCH */}
       <div className="relative">
         <Search className="absolute left-3 top-2.5 text-muted-foreground" size={16} />
@@ -107,15 +116,9 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* PLAN INFO */}
-      <div className="text-sm text-muted-foreground">
-        Plan: <b>{plan}</b> | Limit:{" "}
-        <b>{unlockLimit === null ? "Unlimited" : unlockLimit}</b>
-      </div>
-
       {/* LEADS */}
       {isLoading ? (
-        <p>Loading leads...</p>
+        <p className="text-center text-muted-foreground">Loading leads...</p>
       ) : filteredLeads.length === 0 ? (
         <p className="text-center text-muted-foreground">
           No leads found
@@ -123,7 +126,7 @@ export default function Dashboard() {
       ) : (
         <div className="grid md:grid-cols-3 gap-4">
           {filteredLeads.map((lead: any, i: number) => (
-            <LeadCard key={lead.id || i} lead={lead} />
+            <LeadCard key={i} lead={lead} />
           ))}
         </div>
       )}
