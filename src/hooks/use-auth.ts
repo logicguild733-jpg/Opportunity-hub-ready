@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
 /**
- * Get current logged-in user
+ * GET USER
  */
 export function useAuthUser() {
   return useQuery({
@@ -10,12 +10,9 @@ export function useAuthUser() {
     queryFn: async () => {
       const { data, error } = await supabase.auth.getUser();
 
-      if (error) {
-        console.log("AUTH USER ERROR:", error);
-        return null;
-      }
+      if (error || !data.user) return null;
 
-      return data.user ?? null;
+      return data.user;
     },
   });
 }
@@ -28,22 +25,15 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
-      console.log("LOGIN ATTEMPT:", data);
-
       const { data: res, error } =
         await supabase.auth.signInWithPassword({
           email: data.email,
           password: data.password,
         });
 
-      if (error) {
-        console.log("LOGIN ERROR:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log("LOGIN SUCCESS:", res);
-
-      return res; // full session + user
+      return res.user;
     },
 
     onSuccess: () => {
@@ -60,17 +50,11 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        console.log("LOGOUT ERROR:", error);
-        throw error;
-      }
+      await supabase.auth.signOut();
     },
 
     onSuccess: () => {
       queryClient.setQueryData(["user"], null);
-      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 }
