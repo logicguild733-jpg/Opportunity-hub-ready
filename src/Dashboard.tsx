@@ -8,10 +8,9 @@ type Lead = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // TEMP FAKE DATA (later we replace with Supabase)
   const leads: Lead[] = [
     { title: "Sample Lead 1" },
     { title: "Sample Lead 2" },
@@ -19,19 +18,23 @@ export default function Dashboard() {
 
   useEffect(() => {
     const loadUser = async () => {
-      const { data } = await supabase.auth.getUser();
+      setLoading(true);
 
-      if (!data.user) {
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error || !data.user) {
         navigate("/login");
         return;
       }
 
       setUser(data.user);
+      setLoading(false);
     };
 
     loadUser();
   }, [navigate]);
 
+  if (loading) return <div className="p-6">Loading...</div>;
   if (!user) return null;
 
   return (
