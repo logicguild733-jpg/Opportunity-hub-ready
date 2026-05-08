@@ -1,20 +1,43 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
+
 type Lead = {
   title: string;
 };
 
 export default function Dashboard() {
-  // TEMP FAKE DATA (so UI always works)
-  const user = { name: "Demo User" };
+  const navigate = useNavigate();
 
+  const [user, setUser] = useState<any>(null);
+
+  // TEMP FAKE DATA (later we replace with Supabase)
   const leads: Lead[] = [
     { title: "Sample Lead 1" },
     { title: "Sample Lead 2" },
   ];
 
+  useEffect(() => {
+    const loadUser = async () => {
+      const { data } = await supabase.auth.getUser();
+
+      if (!data.user) {
+        navigate("/login");
+        return;
+      }
+
+      setUser(data.user);
+    };
+
+    loadUser();
+  }, [navigate]);
+
+  if (!user) return null;
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold">
-        Welcome, {user.name} 👋
+        Welcome, {user.email} 👋
       </h1>
 
       <div className="mt-6">
