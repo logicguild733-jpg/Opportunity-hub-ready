@@ -1,32 +1,42 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
 
-import Home from "./pages/Home";
-import Login from "./Login";
-import Dashboard from "./Dashboard";
+export default function Dashboard() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
 
-import Leads from "./pages/Leads";
-import Skills from "./Skills";
-import Reseller from "./Reseller";
-import Admin from "./Admin";
-import NotFound from "./pages/NotFound";
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser();
 
-export default function App() {
+      if (!data.user) {
+        navigate("/login");
+        return;
+      }
+
+      setUser(data.user);
+    };
+
+    checkUser();
+  }, [navigate]);
+
+  if (!user) return <div>Loading...</div>;
+
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* PUBLIC */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">
+        Welcome, {user.email} 👋
+      </h1>
 
-        {/* TEMPORARY: NO PROTECTION */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/leads" element={<Leads />} />
-        <Route path="/skills" element={<Skills />} />
-        <Route path="/reseller" element={<Reseller />} />
-        <Route path="/admin" element={<Admin />} />
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold">Your Leads</h2>
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+        <ul className="mt-4 space-y-2">
+          <li className="p-3 border rounded">Sample Lead 1</li>
+          <li className="p-3 border rounded">Sample Lead 2</li>
+        </ul>
+      </div>
+    </div>
   );
 }
