@@ -27,16 +27,24 @@ export default function Login() {
 
   const onSubmit = async (data: LoginForm) => {
     try {
-      await login.mutateAsync(data);
+      console.log("LOGIN ATTEMPT:", data);
+
+      const result = await login.mutateAsync(data);
+
+      console.log("LOGIN SUCCESS:", result);
 
       toast.success("Welcome back!");
 
+      // Simple routing logic (reliable)
       if (data.email === "logicguild733@gmail.com") {
         navigate("/admin");
       } else {
         navigate("/dashboard");
       }
+
     } catch (error: any) {
+      console.log("LOGIN ERROR:", error);
+
       toast.error(error?.message || "Failed to log in");
     }
   };
@@ -53,9 +61,13 @@ export default function Login() {
             Opportunity Hub
           </div>
 
-          <h2 className="text-3xl font-bold">Sign in to your account</h2>
+          <h2 className="text-3xl font-bold">
+            Sign in to your account
+          </h2>
 
-          <p className="mt-2 text-gray-500">Access is invite-only.</p>
+          <p className="mt-2 text-gray-500">
+            Access is invite-only.
+          </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-10">
 
@@ -65,7 +77,11 @@ export default function Login() {
                 {...register("email")}
                 className="w-full border p-2 rounded"
               />
-              {errors.email && <p>{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-red-500 text-sm">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             <div>
@@ -75,15 +91,20 @@ export default function Login() {
                 {...register("password")}
                 className="w-full border p-2 rounded"
               />
-              {errors.password && <p>{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <button
               type="submit"
+              disabled={login.isPending}
               className="w-full bg-blue-500 text-white py-3 rounded flex items-center justify-center gap-2"
             >
-              Sign in
-              <ArrowRight size={18} />
+              {login.isPending ? "Signing in..." : "Sign in"}
+              {!login.isPending && <ArrowRight size={18} />}
             </button>
 
           </form>
