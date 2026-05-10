@@ -2,69 +2,50 @@ import { NavLink, Outlet } from "react-router-dom";
 
 export default function DashboardLayout() {
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div style={{ display: "flex", minHeight: "100vh" }}>
 
       {/* SIDEBAR */}
-      <aside className="w-64 bg-gray-900 text-white p-5">
+      <div style={{
+        width: "220px",
+        background: "#111",
+        color: "white",
+        padding: "20px"
+      }}>
 
-        <h1 className="text-xl font-bold mb-8">
+        <h2 style={{ marginBottom: "20px" }}>
           Opportunity Hub
-        </h1>
+        </h2>
 
-        <nav className="flex flex-col gap-4">
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
 
-          <NavLink
-            to="/dashboard"
-            className="block px-2 py-1 rounded hover:bg-gray-800"
-          >
+          <NavLink to="/dashboard" style={{ color: "white", textDecoration: "none" }}>
             Dashboard
           </NavLink>
 
-          <NavLink
-            to="/skills"
-            className="block px-2 py-1 rounded hover:bg-gray-800"
-          >
+          <NavLink to="/skills" style={{ color: "white", textDecoration: "none" }}>
             Skills
           </NavLink>
 
-          <NavLink
-            to="/leads"
-            className="block px-2 py-1 rounded hover:bg-gray-800"
-          >
+          <NavLink to="/leads" style={{ color: "white", textDecoration: "none" }}>
             Leads
           </NavLink>
 
-          <NavLink
-            to="/reseller"
-            className="block px-2 py-1 rounded hover:bg-gray-800"
-          >
+          <NavLink to="/reseller" style={{ color: "white", textDecoration: "none" }}>
             Reseller
           </NavLink>
 
-          <NavLink
-            to="/admin"
-            className="block px-2 py-1 rounded hover:bg-gray-800"
-          >
+          <NavLink to="/admin" style={{ color: "white", textDecoration: "none" }}>
             Admin
           </NavLink>
 
-          <NavLink
-            to="/contact"
-            className="block px-2 py-1 rounded hover:bg-gray-800"
-          >
-            Contact Us
-          </NavLink>
+        </div>
 
-        </nav>
+      </div>
 
-      </aside>
-
-      {/* MAIN CONTENT */}
-      <main className="flex-1 p-6">
-
+      {/* CONTENT */}
+      <div style={{ flex: 1, padding: 20 }}>
         <Outlet />
-
-      </main>
+      </div>
 
     </div>
   );
