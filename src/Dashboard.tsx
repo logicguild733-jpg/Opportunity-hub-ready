@@ -1,35 +1,57 @@
-import { useEffect, useState } from "react";
-import { supabase } from "./supabase";
-
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
-    };
-
-    loadUser();
-  }, []);
-
-  if (!user) {
-    return <div className="p-6">Loading dashboard...</div>;
-  }
-
   return (
-    <div className="p-6">
+    <div className="p-6 space-y-6">
+
+      {/* HEADER */}
       <h1 className="text-2xl font-bold">
-        Welcome, {user.email} 👋
+        Opportunity Hub Dashboard 🚀
       </h1>
 
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold">Dashboard</h2>
+      <p className="text-gray-500">
+        Welcome back — your platform is active
+      </p>
 
-        <p className="mt-2 text-gray-500">
-          Your Opportunity Hub is now active 🚀
-        </p>
+      {/* STATS */}
+      <div className="grid grid-cols-3 gap-4 mt-6">
+
+        <div className="p-4 border rounded">
+          <h2 className="font-semibold">Today Leads</h2>
+          <p className="text-2xl">12</p>
+        </div>
+
+        <div className="p-4 border rounded">
+          <h2 className="font-semibold">Active Users</h2>
+          <p className="text-2xl">1</p>
+        </div>
+
+        <div className="p-4 border rounded">
+          <h2 className="font-semibold">Revenue</h2>
+          <p className="text-2xl">$0</p>
+        </div>
+
       </div>
+
+      {/* LEADS SECTION */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-3">
+          Latest Leads
+        </h2>
+
+        <div className="space-y-2">
+          <div className="p-3 border rounded">
+            Quran Teacher needed for online classes (UK)
+          </div>
+
+          <div className="p-3 border rounded">
+            Arabic Tutor required (UAE)
+          </div>
+
+          <div className="p-3 border rounded">
+            Business Coach freelance project (USA)
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
