@@ -1,55 +1,47 @@
-export default function Dashboard() {
+import { NavLink, Outlet } from "react-router-dom";
+
+export default function DashboardLayout() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="flex min-h-screen">
 
-      {/* HEADER */}
-      <h1 className="text-2xl font-bold">
-        Opportunity Hub Dashboard 🚀
-      </h1>
+      {/* SIDEBAR */}
+      <div className="w-64 bg-gray-900 text-white p-4 space-y-4">
 
-      <p className="text-gray-500">
-        Welcome back — your platform is active
-      </p>
+        <h1 className="text-xl font-bold">
+          Opportunity Hub
+        </h1>
 
-      {/* STATS */}
-      <div className="grid grid-cols-3 gap-4 mt-6">
+        <nav className="space-y-2 mt-6">
 
-        <div className="p-4 border rounded">
-          <h2 className="font-semibold">Today Leads</h2>
-          <p className="text-2xl">12</p>
-        </div>
+          <NavLink to="/dashboard" className="block hover:text-blue-400">
+            Dashboard
+          </NavLink>
 
-        <div className="p-4 border rounded">
-          <h2 className="font-semibold">Active Users</h2>
-          <p className="text-2xl">1</p>
-        </div>
+          <NavLink to="/leads" className="block hover:text-blue-400">
+            Leads
+          </NavLink>
 
-        <div className="p-4 border rounded">
-          <h2 className="font-semibold">Revenue</h2>
-          <p className="text-2xl">$0</p>
-        </div>
+          <NavLink to="/skills" className="block hover:text-blue-400">
+            Skills
+          </NavLink>
+
+          <NavLink to="/reseller" className="block hover:text-blue-400">
+            Reseller
+          </NavLink>
+
+          <NavLink to="/admin" className="block hover:text-blue-400">
+            Admin
+          </NavLink>
+
+        </nav>
 
       </div>
 
-      {/* LEADS SECTION */}
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-3">
-          Latest Leads
-        </h2>
+      {/* MAIN AREA */}
+      <div className="flex-1 bg-gray-50 p-6">
 
-        <div className="space-y-2">
-          <div className="p-3 border rounded">
-            Quran Teacher needed for online classes (UK)
-          </div>
+        <Outlet />
 
-          <div className="p-3 border rounded">
-            Arabic Tutor required (UAE)
-          </div>
-
-          <div className="p-3 border rounded">
-            Business Coach freelance project (USA)
-          </div>
-        </div>
       </div>
 
     </div>
