@@ -5,8 +5,12 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate("/login");
-  }, [navigate]); // ✅ IMPORTANT FIX
+    const timer = setTimeout(() => {
+      navigate("/login");
+    }, 100); // small delay prevents crash
 
-  return null;
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
+  return <div className="p-6">Redirecting...</div>;
 }
