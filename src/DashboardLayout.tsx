@@ -28,31 +28,31 @@ export default function DashboardLayout() {
             Dashboard
           </NavLink>
 
-          <NavLink to="/skills" style={{ color: "white", textDecoration: "none" }}>
+          <NavLink to="/dashboard/skills" style={{ color: "white", textDecoration: "none" }}>
             Skills
           </NavLink>
 
-          <NavLink to="/leads" style={{ color: "white", textDecoration: "none" }}>
+          <NavLink to="/dashboard/leads" style={{ color: "white", textDecoration: "none" }}>
             Leads
           </NavLink>
 
-          <NavLink to="/reseller" style={{ color: "white", textDecoration: "none" }}>
+          <NavLink to="/dashboard/reseller" style={{ color: "white", textDecoration: "none" }}>
             Reseller
           </NavLink>
 
-          <NavLink to="/reffer" style={{ color: "white", textDecoration: "none" }}>
+          <NavLink to="/dashboard/reffer" style={{ color: "white", textDecoration: "none" }}>
             Reffer
           </NavLink>
 
-          <NavLink to="/contact" style={{ color: "white", textDecoration: "none" }}>
+          <NavLink to="/dashboard/contact" style={{ color: "white", textDecoration: "none" }}>
             Contact Us
           </NavLink>
 
-          <NavLink to="/policy" style={{ color: "white", textDecoration: "none" }}>
+          <NavLink to="/dashboard/policy" style={{ color: "white", textDecoration: "none" }}>
             Policy
           </NavLink>
 
-          <NavLink to="/admin" style={{ color: "white", textDecoration: "none" }}>
+          <NavLink to="/dashboard/admin" style={{ color: "white", textDecoration: "none" }}>
             Admin
           </NavLink>
 
