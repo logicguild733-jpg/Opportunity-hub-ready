@@ -1,36 +1,46 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./Login";
-import DashboardLayout from "./DashboardLayout"; // ✅ FIXED PATH
+import DashboardLayout from "./DashboardLayout";
 
+// Pages
 import Dashboard from "./pages/Dashboard";
 import Skills from "./pages/Skills";
 import Leads from "./pages/Leads";
 import Reseller from "./pages/Reseller";
 import Admin from "./pages/Admin";
 import Contact from "./pages/Contact";
-import Policy from "./pages/Policy";
 import Reffer from "./pages/Reffer";
+
+// Policies (correct names)
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import SubscriptionPolicy from "./pages/SubscriptionPolicy";
 
 export default function App() {
   return (
     <Routes>
 
-      {/* PUBLIC */}
+      {/* PUBLIC ROUTES */}
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
 
-      {/* DASHBOARD (NESTED PROPERLY) */}
+      {/* DASHBOARD LAYOUT */}
       <Route path="/dashboard" element={<DashboardLayout />}>
 
+        {/* MAIN DASHBOARD */}
         <Route index element={<Dashboard />} />
+
+        {/* CORE PAGES */}
         <Route path="skills" element={<Skills />} />
         <Route path="leads" element={<Leads />} />
         <Route path="reseller" element={<Reseller />} />
         <Route path="admin" element={<Admin />} />
         <Route path="contact" element={<Contact />} />
-        <Route path="policy" element={<Policy />} />
         <Route path="reffer" element={<Reffer />} />
+
+        {/* POLICY PAGES */}
+        <Route path="privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="subscription-policy" element={<SubscriptionPolicy />} />
 
       </Route>
 
