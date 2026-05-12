@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Mail, MessageSquare } from "lucide-react";
-
+no
 export default function Contact() {
   return (
     <div className="max-w-2xl mx-auto space-y-8 py-4">
