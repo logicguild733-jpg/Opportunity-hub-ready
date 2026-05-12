@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./Login";
-import DashboardLayout from "./layouts/DashboardLayout";
+import DashboardLayout from "./DashboardLayout"; // ✅ FIXED PATH
 
 import Dashboard from "./pages/Dashboard";
 import Skills from "./pages/Skills";
