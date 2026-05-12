@@ -1,53 +1,75 @@
-<div
-  style={{
-    width: "240px",
-    background: "#0f172a",
-    color: "white",
-    padding: "20px",
-    display: "flex",
-    flexDirection: "column",
-    height: "100vh",
-  }}
->
-  {/* BRAND */}
-  <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "25px" }}>
-    Opportunity Hub 🚀
-  </h2>
+import { NavLink, Outlet } from "react-router-dom";
 
-  {/* NAV */}
-  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+const linkStyle = {
+  color: "white",
+  textDecoration: "none",
+  padding: "8px 10px",
+  borderRadius: "6px",
+};
 
-    <NavLink to="/dashboard" style={linkStyle}>
-      Dashboard
-    </NavLink>
+export default function DashboardLayout() {
+  return (
+    <div style={{ display: "flex", minHeight: "100vh" }}>
 
-    <NavLink to="/skills" style={linkStyle}>
-      Skills
-    </NavLink>
+      {/* SIDEBAR */}
+      <div
+        style={{
+          width: "240px",
+          background: "#0f172a",
+          color: "white",
+          padding: "20px",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* BRAND */}
+        <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "25px" }}>
+          Opportunity Hub 🚀
+        </h2>
 
-    <NavLink to="/leads" style={linkStyle}>
-      Leads
-    </NavLink>
+        {/* NAV */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
 
-    <NavLink to="/reseller" style={linkStyle}>
-      Reseller
-    </NavLink>
+          <NavLink to="/dashboard" style={linkStyle}>
+            Dashboard
+          </NavLink>
 
-    <NavLink to="/reffer" style={linkStyle}>
-      Reffer
-    </NavLink>
+          <NavLink to="/dashboard/skills" style={linkStyle}>
+            Skills
+          </NavLink>
 
-    <NavLink to="/contact" style={linkStyle}>
-      Contact Us
-    </NavLink>
+          <NavLink to="/dashboard/leads" style={linkStyle}>
+            Leads
+          </NavLink>
 
-    <NavLink to="/policy" style={linkStyle}>
-      Policy
-    </NavLink>
+          <NavLink to="/dashboard/reseller" style={linkStyle}>
+            Reseller
+          </NavLink>
 
-    <NavLink to="/admin" style={linkStyle}>
-      Admin
-    </NavLink>
+          <NavLink to="/dashboard/reffer" style={linkStyle}>
+            Reffer
+          </NavLink>
 
-  </div>
-</div>
+          <NavLink to="/dashboard/contact" style={linkStyle}>
+            Contact Us
+          </NavLink>
+
+          <NavLink to="/dashboard/policy" style={linkStyle}>
+            Policy
+          </NavLink>
+
+          <NavLink to="/dashboard/admin" style={linkStyle}>
+            Admin
+          </NavLink>
+
+        </div>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div style={{ flex: 1, padding: 20 }}>
+        <Outlet />
+      </div>
+
+    </div>
+  );
+}
