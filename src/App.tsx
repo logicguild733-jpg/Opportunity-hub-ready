@@ -10,7 +10,7 @@ import Leads from "./pages/Leads";
 import Reseller from "./pages/Reseller";
 import Admin from "./pages/Admin";
 import Contact from "./pages/Contact";
-import Reffer from "./pages/Refferall";
+import Referral from "./pages/Referral"; // ✅ FIXED
 
 // Policies
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -37,8 +37,8 @@ export default function App() {
         <Route path="admin" element={<Admin />} />
         <Route path="contact" element={<Contact />} />
 
-        {/* ✅ FIXED HERE */}
-        <Route path="reffer" element={<Reffer />} />
+        {/* ✅ FIXED */}
+        <Route path="referral" element={<Referral />} />
 
         {/* POLICY PAGES */}
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
