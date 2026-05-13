@@ -12,7 +12,7 @@ import Admin from "./pages/Admin";
 import Contact from "./pages/Contact";
 import Reffer from "./pages/Refferall";
 
-// Policies (correct names)
+// Policies
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import SubscriptionPolicy from "./pages/SubscriptionPolicy";
 
@@ -36,7 +36,9 @@ export default function App() {
         <Route path="reseller" element={<Reseller />} />
         <Route path="admin" element={<Admin />} />
         <Route path="contact" element={<Contact />} />
-        <Route path="reffer" element={<Refferall />} />
+
+        {/* ✅ FIXED HERE */}
+        <Route path="reffer" element={<Reffer />} />
 
         {/* POLICY PAGES */}
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
