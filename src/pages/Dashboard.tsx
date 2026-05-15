@@ -1,11 +1,12 @@
 import { NavLink, Outlet } from "react-router-dom";
 
-const linkStyle = {
+const linkStyle = ({ isActive }: { isActive: boolean }) => ({
   color: "white",
   textDecoration: "none",
   padding: "8px 10px",
   borderRadius: "6px",
-};
+  background: isActive ? "#1e293b" : "transparent",
+});
 
 export default function DashboardLayout() {
   return (
@@ -22,12 +23,10 @@ export default function DashboardLayout() {
           flexDirection: "column",
         }}
       >
-        {/* BRAND */}
         <h2 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "25px" }}>
           Opportunity Hub 🚀
         </h2>
 
-        {/* NAV */}
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
 
           <NavLink to="/dashboard" style={linkStyle}>
@@ -46,16 +45,22 @@ export default function DashboardLayout() {
             Reseller
           </NavLink>
 
-          <NavLink to="/dashboard/reffer" style={linkStyle}>
-            Reffer
+          {/* ✅ FIXED */}
+          <NavLink to="/dashboard/referral" style={linkStyle}>
+            Referral
           </NavLink>
 
           <NavLink to="/dashboard/contact" style={linkStyle}>
             Contact Us
           </NavLink>
 
-          <NavLink to="/dashboard/policy" style={linkStyle}>
-            Policy
+          {/* ✅ FIXED */}
+          <NavLink to="/dashboard/privacy-policy" style={linkStyle}>
+            Privacy Policy
+          </NavLink>
+
+          <NavLink to="/dashboard/subscription-policy" style={linkStyle}>
+            Subscription Policy
           </NavLink>
 
           <NavLink to="/dashboard/admin" style={linkStyle}>
@@ -65,7 +70,7 @@ export default function DashboardLayout() {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <div style={{ flex: 1, padding: 20 }}>
         <Outlet />
       </div>
