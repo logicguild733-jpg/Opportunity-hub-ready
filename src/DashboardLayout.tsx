@@ -6,7 +6,7 @@ export default function DashboardLayout() {
 
       {/* SIDEBAR */}
       <div style={{ width: 220, background: "#111", color: "#fff", padding: 20 }}>
-        <h2>Opportunity Hub</h2>
+        <h2>Opportunity Hub 🚀</h2>
 
         <nav style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <NavLink to="/dashboard">Dashboard</NavLink>
@@ -21,7 +21,7 @@ export default function DashboardLayout() {
         </nav>
       </div>
 
-      {/* CONTENT */}
+      {/* MAIN CONTENT */}
       <div style={{ flex: 1, padding: 20 }}>
         <Outlet />
       </div>
