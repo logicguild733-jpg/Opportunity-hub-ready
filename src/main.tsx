@@ -1,25 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App";
-
-// 🔥 SIMPLE ERROR LOGGING
-window.onerror = (msg, url, line, col, error) => {
-  console.error("GLOBAL ERROR:", msg, error);
-};
-
-window.onunhandledrejection = (event) => {
-  console.error("PROMISE ERROR:", event.reason);
-};
 
 const root = document.getElementById("root");
 
 if (!root) {
   document.body.innerHTML = "<h1>❌ ROOT NOT FOUND</h1>";
 } else {
-  ReactDOM.createRoot(root).render(
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  );
+  root.innerHTML = "<h1 style='color:black'>HTML WORKING ✅</h1>";
+
+  setTimeout(() => {
+    ReactDOM.createRoot(root).render(
+      <h1 style={{ color: "black" }}>REACT WORKING ✅</h1>
+    );
+  }, 1000);
 }
