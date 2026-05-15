@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Login";
 import DashboardLayout from "./DashboardLayout";
 
+// Pages
 import Dashboard from "./pages/Dashboard";
 import Skills from "./pages/Skills";
 import Leads from "./pages/Leads";
@@ -17,11 +18,11 @@ export default function App() {
   return (
     <Routes>
 
-      {/* LOGIN */}
+      {/* PUBLIC */}
       <Route path="/login" element={<Login />} />
 
-      {/* DASHBOARD WRAPPER */}
-      <Route path="/dashboard" element={<DashboardLayout />}>
+      {/* PRIVATE APP */}
+      <Route path="/dashboard/*" element={<DashboardLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="skills" element={<Skills />} />
         <Route path="leads" element={<Leads />} />
