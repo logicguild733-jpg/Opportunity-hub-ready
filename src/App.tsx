@@ -18,10 +18,10 @@ export default function App() {
   return (
     <Routes>
 
-      {/* PUBLIC */}
+      {/* LOGIN */}
       <Route path="/login" element={<Login />} />
 
-      {/* PRIVATE APP */}
+      {/* DASHBOARD (IMPORTANT: * FIX) */}
       <Route path="/dashboard/*" element={<DashboardLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="skills" element={<Skills />} />
