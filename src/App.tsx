@@ -19,19 +19,19 @@ export default function App() {
   return (
     <Routes>
 
-      {/* DEFAULT → LOGIN */}
+      {/* ROOT → LOGIN */}
       <Route path="/" element={<Navigate to="/login" replace />} />
 
       {/* LOGIN */}
       <Route path="/login" element={<Login />} />
 
-      {/* DASHBOARD */}
+      {/* DASHBOARD WRAPPER */}
       <Route path="/dashboard" element={<DashboardLayout />}>
 
-        {/* DEFAULT DASHBOARD */}
+        {/* DEFAULT */}
         <Route index element={<Dashboard />} />
 
-        {/* PAGES */}
+        {/* CORE */}
         <Route path="skills" element={<Skills />} />
         <Route path="leads" element={<Leads />} />
         <Route path="reseller" element={<Reseller />} />
@@ -43,9 +43,12 @@ export default function App() {
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
         <Route path="subscription-policy" element={<SubscriptionPolicy />} />
 
+        {/* 🚨 INTERNAL FALLBACK */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
       </Route>
 
-      {/* 🚨 CATCH ALL (VERY IMPORTANT) */}
+      {/* 🚨 GLOBAL FALLBACK */}
       <Route path="*" element={<Navigate to="/login" replace />} />
 
     </Routes>
