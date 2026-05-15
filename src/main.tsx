@@ -1,16 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import "./index.css";
 
 const root = document.getElementById("root");
 
 if (!root) {
-  document.body.innerHTML = "<h1>❌ ROOT NOT FOUND</h1>";
+  document.body.innerHTML = "<h1>Root not found ❌</h1>";
 } else {
-  root.innerHTML = "<h1 style='color:black'>HTML WORKING ✅</h1>";
-
-  setTimeout(() => {
-    ReactDOM.createRoot(root).render(
-      <h1 style={{ color: "black" }}>REACT WORKING ✅</h1>
-    );
-  }, 1000);
+  ReactDOM.createRoot(root).render(
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  );
 }
