@@ -3,25 +3,23 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 
-// ✅ GLOBAL ERROR CATCH (VERY IMPORTANT)
-window.onerror = function (msg, url, line, col, error) {
-  console.error("🔥 GLOBAL ERROR:", error);
+// 🔥 SIMPLE ERROR LOGGING
+window.onerror = (msg, url, line, col, error) => {
+  console.error("GLOBAL ERROR:", msg, error);
 };
 
-window.onunhandledrejection = function (event) {
-  console.error("🔥 PROMISE ERROR:", event.reason);
+window.onunhandledrejection = (event) => {
+  console.error("PROMISE ERROR:", event.reason);
 };
 
-const rootElement = document.getElementById("root");
+const root = document.getElementById("root");
 
-if (!rootElement) {
-  throw new Error("Root element not found");
-}
-
-ReactDOM.createRoot(rootElement).render(
-  <React.StrictMode>
+if (!root) {
+  document.body.innerHTML = "<h1>❌ ROOT NOT FOUND</h1>";
+} else {
+  ReactDOM.createRoot(root).render(
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </React.StrictMode>
-);
+  );
+}
