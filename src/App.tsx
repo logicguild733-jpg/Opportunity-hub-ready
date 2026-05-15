@@ -10,9 +10,8 @@ import Leads from "./pages/Leads";
 import Reseller from "./pages/Reseller";
 import Admin from "./pages/Admin";
 import Contact from "./pages/Contact";
-import Referral from "./pages/Referral"; // ✅ FIXED
+import Referral from "./pages/Referral";
 
-// Policies
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import SubscriptionPolicy from "./pages/SubscriptionPolicy";
 
@@ -20,31 +19,34 @@ export default function App() {
   return (
     <Routes>
 
-      {/* PUBLIC ROUTES */}
-      <Route path="/" element={<Navigate to="/login" />} />
+      {/* DEFAULT → LOGIN */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+
+      {/* LOGIN */}
       <Route path="/login" element={<Login />} />
 
-      {/* DASHBOARD LAYOUT */}
+      {/* DASHBOARD */}
       <Route path="/dashboard" element={<DashboardLayout />}>
 
-        {/* MAIN DASHBOARD */}
+        {/* DEFAULT DASHBOARD */}
         <Route index element={<Dashboard />} />
 
-        {/* CORE PAGES */}
+        {/* PAGES */}
         <Route path="skills" element={<Skills />} />
         <Route path="leads" element={<Leads />} />
         <Route path="reseller" element={<Reseller />} />
         <Route path="admin" element={<Admin />} />
         <Route path="contact" element={<Contact />} />
-
-        {/* ✅ FIXED */}
         <Route path="referral" element={<Referral />} />
 
-        {/* POLICY PAGES */}
+        {/* POLICIES */}
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
         <Route path="subscription-policy" element={<SubscriptionPolicy />} />
 
       </Route>
+
+      {/* 🚨 CATCH ALL (VERY IMPORTANT) */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
 
     </Routes>
   );
