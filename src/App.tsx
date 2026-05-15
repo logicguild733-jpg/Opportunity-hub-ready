@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Login";
 import DashboardLayout from "./DashboardLayout";
 
-// Pages
 import Dashboard from "./pages/Dashboard";
 import Skills from "./pages/Skills";
 import Leads from "./pages/Leads";
@@ -11,7 +10,6 @@ import Reseller from "./pages/Reseller";
 import Admin from "./pages/Admin";
 import Contact from "./pages/Contact";
 import Referral from "./pages/Referral";
-
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import SubscriptionPolicy from "./pages/SubscriptionPolicy";
 
@@ -19,36 +17,26 @@ export default function App() {
   return (
     <Routes>
 
-      {/* ROOT → LOGIN */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
-
       {/* LOGIN */}
       <Route path="/login" element={<Login />} />
 
       {/* DASHBOARD WRAPPER */}
       <Route path="/dashboard" element={<DashboardLayout />}>
-
-        {/* DEFAULT */}
         <Route index element={<Dashboard />} />
-
-        {/* CORE */}
         <Route path="skills" element={<Skills />} />
         <Route path="leads" element={<Leads />} />
         <Route path="reseller" element={<Reseller />} />
         <Route path="admin" element={<Admin />} />
         <Route path="contact" element={<Contact />} />
         <Route path="referral" element={<Referral />} />
-
-        {/* POLICIES */}
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
         <Route path="subscription-policy" element={<SubscriptionPolicy />} />
-
-        {/* 🚨 INTERNAL FALLBACK */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-
       </Route>
 
-      {/* 🚨 GLOBAL FALLBACK */}
+      {/* DEFAULT */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+
+      {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/login" replace />} />
 
     </Routes>
