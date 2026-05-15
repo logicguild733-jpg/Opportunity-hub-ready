@@ -5,62 +5,23 @@ export default function DashboardLayout() {
     <div style={{ display: "flex", minHeight: "100vh" }}>
 
       {/* SIDEBAR */}
-      <div style={{
-        width: "240px",
-        background: "#0f172a",
-        color: "white",
-        padding: "20px",
-        display: "flex",
-        flexDirection: "column"
-      }}>
+      <div style={{ width: 220, background: "#111", color: "#fff", padding: 20 }}>
+        <h2>Opportunity Hub</h2>
 
-        <h2 style={{ marginBottom: "20px", fontWeight: "bold" }}>
-          Opportunity Hub 🚀
-        </h2>
-
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "12px"
-        }}>
-
-          <NavLink to="/dashboard" style={{ color: "white", textDecoration: "none" }}>
-            Dashboard
-          </NavLink>
-
-          <NavLink to="/dashboard/skills" style={{ color: "white", textDecoration: "none" }}>
-            Skills
-          </NavLink>
-
-          <NavLink to="/dashboard/leads" style={{ color: "white", textDecoration: "none" }}>
-            Leads
-          </NavLink>
-
-          <NavLink to="/dashboard/reseller" style={{ color: "white", textDecoration: "none" }}>
-            Reseller
-          </NavLink>
-
-          <NavLink to="/dashboard/reffer" style={{ color: "white", textDecoration: "none" }}>
-            Reffer
-          </NavLink>
-
-          <NavLink to="/dashboard/contact" style={{ color: "white", textDecoration: "none" }}>
-            Contact Us
-          </NavLink>
-
-          <NavLink to="/dashboard/policy" style={{ color: "white", textDecoration: "none" }}>
-            Policy
-          </NavLink>
-
-          <NavLink to="/dashboard/admin" style={{ color: "white", textDecoration: "none" }}>
-            Admin
-          </NavLink>
-
-        </div>
-
+        <nav style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <NavLink to="/dashboard">Dashboard</NavLink>
+          <NavLink to="/dashboard/skills">Skills</NavLink>
+          <NavLink to="/dashboard/leads">Leads</NavLink>
+          <NavLink to="/dashboard/reseller">Reseller</NavLink>
+          <NavLink to="/dashboard/referral">Referral</NavLink>
+          <NavLink to="/dashboard/contact">Contact</NavLink>
+          <NavLink to="/dashboard/privacy-policy">Privacy</NavLink>
+          <NavLink to="/dashboard/subscription-policy">Subscription</NavLink>
+          <NavLink to="/dashboard/admin">Admin</NavLink>
+        </nav>
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* CONTENT */}
       <div style={{ flex: 1, padding: 20 }}>
         <Outlet />
       </div>
