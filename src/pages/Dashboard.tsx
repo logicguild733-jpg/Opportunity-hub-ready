@@ -1,26 +1,46 @@
-import { NavLink, Outlet } from "react-router-dom";
-
-export default function DashboardLayout() {
+export default function Dashboard() {
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div style={{ padding: 20 }}>
+      <h1 style={{ marginBottom: 20 }}>Dashboard 🚀</h1>
 
-      {/* Sidebar */}
-      <div style={{ width: 220, background: "#111", color: "#fff", padding: 20 }}>
-        <h2>Opportunity Hub 🚀</h2>
+      {/* STATS SECTION */}
+      <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+        
+        <div style={cardStyle}>
+          <h3>Total Leads</h3>
+          <p>0</p>
+        </div>
 
-        <nav style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <NavLink to="/dashboard">Dashboard</NavLink>
-          <NavLink to="/dashboard/skills">Skills</NavLink>
-          <NavLink to="/dashboard/leads">Leads</NavLink>
-          <NavLink to="/dashboard/reseller">Reseller</NavLink>
-        </nav>
+        <div style={cardStyle}>
+          <h3>Active Skills</h3>
+          <p>0</p>
+        </div>
+
+        <div style={cardStyle}>
+          <h3>Referrals</h3>
+          <p>0</p>
+        </div>
+
+        <div style={cardStyle}>
+          <h3>Earnings</h3>
+          <p>$0</p>
+        </div>
+
       </div>
 
-      {/* Content */}
-      <div style={{ flex: 1, padding: 20 }}>
-        <Outlet />
+      {/* RECENT ACTIVITY */}
+      <div style={{ marginTop: 40 }}>
+        <h2>Recent Activity</h2>
+        <p>No activity yet...</p>
       </div>
-
     </div>
   );
 }
+
+const cardStyle = {
+  background: "#f5f5f5",
+  padding: 20,
+  borderRadius: 10,
+  width: 200,
+  boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+};
