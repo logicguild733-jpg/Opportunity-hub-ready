@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Login";
 import DashboardLayout from "./DashboardLayout";
 
-// SAFE PAGE (no import crash)
+// SAFE PAGE COMPONENT (no crash risk)
 function Page({ name }: { name: string }) {
   return <h1>{name} Page ✅</h1>;
 }
@@ -12,21 +12,31 @@ export default function App() {
   return (
     <Routes>
 
+      {/* LOGIN */}
       <Route path="/login" element={<Login />} />
 
+      {/* DASHBOARD */}
       <Route path="/dashboard/*" element={<DashboardLayout />}>
+
+        {/* DEFAULT */}
         <Route index element={<Page name="Dashboard" />} />
+
+        {/* MAIN PAGES */}
         <Route path="skills" element={<Page name="Skills" />} />
         <Route path="leads" element={<Page name="Leads" />} />
         <Route path="reseller" element={<Page name="Reseller" />} />
-        <Route path="admin" element={<Page name="Admin" />} />
+
+        {/* NEW PAGES */}
         <Route path="contact" element={<Page name="Contact" />} />
         <Route path="referral" element={<Page name="Referral" />} />
-        <Route path="privacy-policy" element={<Page name="Privacy Policy" />} />
-        <Route path="subscription-policy" element={<Page name="Subscription Policy" />} />
+        <Route path="admin" element={<Page name="Admin" />} />
+
       </Route>
 
+      {/* DEFAULT REDIRECT */}
       <Route path="/" element={<Navigate to="/login" replace />} />
+
+      {/* FALLBACK */}
       <Route path="*" element={<Navigate to="/login" replace />} />
 
     </Routes>
