@@ -1,46 +1,57 @@
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
+
 export default function Dashboard() {
+  const [leadsCount, setLeadsCount] = useState(0);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    const { count } = await supabase
+      .from("leads")
+      .select("*", { count: "exact", head: true });
+
+    setLeadsCount(count || 0);
+  };
+
   return (
     <div style={{ padding: 20 }}>
-      <h1 style={{ marginBottom: 20 }}>Dashboard 🚀</h1>
+      <h1>Dashboard 🚀</h1>
 
-      {/* STATS SECTION */}
-      <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-        
+      <div style={{ display: "flex", gap: 20, marginTop: 20 }}>
+
         <div style={cardStyle}>
-          <h3>Total Leads</h3>
-          <p>0</p>
+          <h2>Total Leads</h2>
+          <p style={numberStyle}>{leadsCount}</p>
         </div>
 
         <div style={cardStyle}>
-          <h3>Active Skills</h3>
-          <p>0</p>
+          <h2>Active Users</h2>
+          <p style={numberStyle}>Coming soon</p>
         </div>
 
         <div style={cardStyle}>
-          <h3>Referrals</h3>
-          <p>0</p>
+          <h2>Revenue</h2>
+          <p style={numberStyle}>Coming soon</p>
         </div>
 
-        <div style={cardStyle}>
-          <h3>Earnings</h3>
-          <p>$0</p>
-        </div>
-
-      </div>
-
-      {/* RECENT ACTIVITY */}
-      <div style={{ marginTop: 40 }}>
-        <h2>Recent Activity</h2>
-        <p>No activity yet...</p>
       </div>
     </div>
   );
 }
 
 const cardStyle = {
-  background: "#f5f5f5",
   padding: 20,
+  border: "1px solid #ddd",
   borderRadius: 10,
   width: 200,
-  boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+  background: "#fff",
+};
+
+const numberStyle = {
+  fontSize: 28,
+  fontWeight: "bold",
+  marginTop: 10,
 };
