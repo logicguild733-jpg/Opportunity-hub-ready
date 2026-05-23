@@ -28,7 +28,7 @@ export default function Leads() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h1>Leads 🚀</h1>
+      <h1>Fresh Leads 🚀</h1>
 
       {loading ? (
         <p>Loading leads...</p>
@@ -39,15 +39,30 @@ export default function Leads() {
           <div
             key={lead.id}
             style={{
-              padding: 12,
-              marginBottom: 10,
+              padding: 15,
+              marginBottom: 12,
               border: "1px solid #ddd",
-              borderRadius: 8,
+              borderRadius: 10,
               background: "#fff",
             }}
           >
-            <h3>{lead.title}</h3>
-            <p>{lead.description}</p>
+            <h2>{lead.name}</h2>
+
+            <p>
+              <strong>Email:</strong> {lead.email}
+            </p>
+
+            <p>
+              <strong>Phone:</strong> {lead.phone}
+            </p>
+
+            <p>
+              <strong>Company:</strong> {lead.company}
+            </p>
+
+            <p>
+              <strong>Status:</strong> {lead.status}
+            </p>
           </div>
         ))
       )}
