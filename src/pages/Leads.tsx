@@ -14,11 +14,13 @@ export default function Leads() {
 
     const { data, error } = await supabase
       .from("leads")
-      .select("*")
-      .order("id", { ascending: false });
+      .select("*");
+
+    console.log("SUPABASE DATA:", data);
+    console.log("SUPABASE ERROR:", error);
 
     if (error) {
-      console.error("Error fetching leads:", error);
+      console.error(error);
     } else {
       setLeads(data || []);
     }
@@ -29,6 +31,19 @@ export default function Leads() {
   return (
     <div style={{ padding: 20 }}>
       <h1>Fresh Leads 🚀</h1>
+
+      <p>Total Leads: {leads.length}</p>
+
+      <pre
+        style={{
+          background: "#f4f4f4",
+          padding: 10,
+          borderRadius: 10,
+          overflow: "auto",
+        }}
+      >
+        {JSON.stringify(leads, null, 2)}
+      </pre>
 
       {loading ? (
         <p>Loading leads...</p>
@@ -44,6 +59,7 @@ export default function Leads() {
               border: "1px solid #ddd",
               borderRadius: 10,
               background: "#fff",
+              color: "#000",
             }}
           >
             <h2>{lead.name}</h2>
