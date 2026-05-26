@@ -2,8 +2,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./Login";
 import DashboardLayout from "./DashboardLayout";
+import Opportunities from "./pages/Opportunities";
 
-// SAFE PAGE COMPONENT (no crash risk)
+// SAFE PAGE COMPONENT
 function Page({ name }: { name: string }) {
   return <h1>{name} Page ✅</h1>;
 }
@@ -23,7 +24,10 @@ export default function App() {
 
         {/* MAIN PAGES */}
         <Route path="skills" element={<Page name="Skills" />} />
-        <Route path="leads" element={<Page name="Leads" />} />
+
+        {/* OPPORTUNITIES PAGE */}
+        <Route path="opportunities" element={<Opportunities />} />
+
         <Route path="reseller" element={<Page name="Reseller" />} />
 
         {/* NEW PAGES */}
