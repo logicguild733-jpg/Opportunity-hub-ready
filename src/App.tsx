@@ -11,7 +11,7 @@ function App() {
         .select("*");
 
       if (error) {
-        console.error("ERROR:", error);
+        console.error(error);
         return;
       }
 
@@ -27,22 +27,32 @@ function App() {
 
       {leads.length === 0 && <p>No leads found</p>}
 
-      {leads.map((lead, index) => (
+      {leads.map((lead) => (
         <div
-          key={index}
+          key={lead.id}
           style={{
             border: "1px solid #ddd",
-            padding: 12,
-            marginBottom: 10,
-            borderRadius: 8,
+            padding: 15,
+            marginBottom: 12,
+            borderRadius: 10,
+            background: "#fff",
           }}
         >
-          {/* Show ALL fields dynamically */}
-          {Object.entries(lead).map(([key, value]) => (
-            <p key={key}>
-              <b>{key}:</b> {String(value)}
-            </p>
-          ))}
+          <h3>{lead.client_name || lead.name || "No Name"}</h3>
+
+          <p><b>Service:</b> {lead.service_needed || "N/A"}</p>
+
+          <p><b>Budget:</b> {lead.budget || "N/A"}</p>
+
+          <p><b>Location:</b> {lead.city || ""} {lead.country || ""}</p>
+
+          <p><b>Status:</b> {lead.status}</p>
+
+          <p><b>Quality:</b> {lead.lead_quality || "N/A"}</p>
+
+          <p><b>Description:</b> {lead.description || "N/A"}</p>
+
+          <p><b>Email:</b> {lead.client_email || "N/A"}</p>
         </div>
       ))}
     </div>
