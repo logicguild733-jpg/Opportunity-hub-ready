@@ -3,6 +3,7 @@ import { supabase } from "./lib/supabase";
 
 function App() {
   const [leads, setLeads] = useState<any[]>([]);
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -21,38 +22,41 @@ function App() {
     fetchLeads();
   }, []);
 
+  // SIMPLE FILTER LOGIC
+  const filteredLeads = leads.filter((lead) => {
+    if (filter === "all") return true;
+    return (lead.lead_quality || "").toLowerCase() === filter;
+  });
+
   return (
     <div style={{ padding: 20 }}>
       <h1>Leads</h1>
 
-      {leads.length === 0 && <p>No leads found</p>}
+      {/* BUTTONS */}
+      <div style={{ marginBottom: 20 }}>
+        <button onClick={() => setFilter("all")}>All</button>
+        <button onClick={() => setFilter("high")}>High</button>
+        <button onClick={() => setFilter("medium")}>Medium</button>
+        <button onClick={() => setFilter("low")}>Low</button>
+      </div>
 
-      {leads.map((lead) => (
+      {/* DATA */}
+      {filteredLeads.map((lead) => (
         <div
           key={lead.id}
           style={{
             border: "1px solid #ddd",
-            padding: 15,
-            marginBottom: 12,
-            borderRadius: 10,
-            background: "#fff",
+            padding: 12,
+            marginBottom: 10,
+            borderRadius: 8,
           }}
         >
           <h3>{lead.client_name || lead.name || "No Name"}</h3>
 
-          <p><b>Service:</b> {lead.service_needed || "N/A"}</p>
-
-          <p><b>Budget:</b> {lead.budget || "N/A"}</p>
-
-          <p><b>Location:</b> {lead.city || ""} {lead.country || ""}</p>
-
-          <p><b>Status:</b> {lead.status}</p>
-
-          <p><b>Quality:</b> {lead.lead_quality || "N/A"}</p>
-
-          <p><b>Description:</b> {lead.description || "N/A"}</p>
-
-          <p><b>Email:</b> {lead.client_email || "N/A"}</p>
+          <p><b>Service:</b> {lead.service_needed}</p>
+          <p><b>Budget:</b> {lead.budget}</p>
+          <p><b>City:</b> {lead.city}</p>
+          <p><b>Quality:</b> {lead.lead_quality}</p>
         </div>
       ))}
     </div>
