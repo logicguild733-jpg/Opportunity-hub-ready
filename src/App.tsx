@@ -1,48 +1,51 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "./lib/supabase";
 
-import Login from "./Login";
-import DashboardLayout from "./DashboardLayout";
-import Opportunities from "./pages/Opportunities";
+function App() {
+  const [leads, setLeads] = useState<any[]>([]);
 
-// SAFE PAGE COMPONENT
-function Page({ name }: { name: string }) {
-  return <h1>{name} Page ✅</h1>;
-}
+  useEffect(() => {
+    const fetchLeads = async () => {
+      const { data, error } = await supabase
+        .from("leads")
+        .select("*");
 
-export default function App() {
+      console.log("DATA:", data);
+      console.log("ERROR:", error);
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      setLeads(data || []);
+    };
+
+    fetchLeads();
+  }, []);
+
   return (
-    <Routes>
+    <div style={{ padding: 20 }}>
+      <h1>Leads</h1>
 
-      {/* LOGIN */}
-      <Route path="/login" element={<Login />} />
+      {leads.length === 0 && <p>No leads found</p>}
 
-      {/* DASHBOARD */}
-      <Route path="/dashboard/*" element={<DashboardLayout />}>
-
-        {/* DEFAULT */}
-        <Route index element={<Page name="Dashboard" />} />
-
-        {/* MAIN PAGES */}
-        <Route path="skills" element={<Page name="Skills" />} />
-
-        {/* OPPORTUNITIES PAGE */}
-        <Route path="opportunities" element={<Opportunities />} />
-
-        <Route path="reseller" element={<Page name="Reseller" />} />
-
-        {/* NEW PAGES */}
-        <Route path="contact" element={<Page name="Contact" />} />
-        <Route path="referral" element={<Page name="Referral" />} />
-        <Route path="admin" element={<Page name="Admin" />} />
-
-      </Route>
-
-      {/* DEFAULT REDIRECT */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
-
-      {/* FALLBACK */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
-
-    </Routes>
+      {leads.map((lead) => (
+        <div
+          key={lead.id}
+          style={{
+            border: "1px solid #ddd",
+            padding: 12,
+            marginBottom: 10,
+          }}
+        >
+          <h3>{lead.title}</h3>
+          <p>{lead.country}</p>
+          <p>{lead.type}</p>
+        </div>
+      ))}
+    </div>
   );
 }
+
+export default App;
