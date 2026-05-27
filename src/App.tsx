@@ -8,101 +8,160 @@ function App() {
   const [serviceFilter, setServiceFilter] = useState("all");
 
   useEffect(() => {
-    const fetchLeads = async () => {
-      const { data, error } = await supabase
-        .from("leads")
-        .select("*");
+    getLeads();
+  }, [filter, countryFilter, serviceFilter]);
 
-      if (error) {
-        console.error(error);
-        return;
-      }
+  const getLeads = async () => {
+    const cutoff = new Date();
+    cutoff.setHours(cutoff.getHours() - 72);
 
-      setLeads(data || []);
-    };
+    let query = supabase
+      .from("leads")
+      .select("*")
+      .gte("created_at", cutoff.toISOString())
+      .order("created_at", { ascending: false });
 
-    fetchLeads();
-  }, []);
-
-  // AUTO GET COUNTRIES & SERVICES
-  const countries = ["all", ...new Set(leads.map(l => l.country).filter(Boolean))];
-  const services = ["all", ...new Set(leads.map(l => l.service_needed).filter(Boolean))];
-
-  // FILTER LOGIC
-  const filteredLeads = leads.filter((lead) => {
     if (filter !== "all") {
-      if ((lead.lead_quality || "").toLowerCase() !== filter) {
-        return false;
-      }
+      query = query.eq("lead_quality", filter);
     }
 
     if (countryFilter !== "all") {
-      if (lead.country !== countryFilter) {
-        return false;
-      }
+      query = query.eq("country", countryFilter);
     }
 
     if (serviceFilter !== "all") {
-      if (lead.service_needed !== serviceFilter) {
-        return false;
-      }
+      query = query.eq("service_needed", serviceFilter);
     }
 
-    return true;
-  });
+    const { data, error } = await query;
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setLeads(data || []);
+  };
+
+  const countries = ["all", ...new Set(leads.map(l => l.country).filter(Boolean))];
+  const services = ["all", ...new Set(leads.map(l => l.service_needed).filter(Boolean))];
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Leads</h1>
+    <div
+      style={{
+        background: "#0f0f10",
+        minHeight: "100vh",
+        color: "#ffffff",
+        fontFamily: "sans-serif",
+        padding: 20,
+      }}
+    >
+      <div style={{ maxWidth: 900, margin: "0 auto" }}>
+        <h1 style={{ marginBottom: 20 }}>Leads</h1>
 
-      {/* QUALITY FILTER */}
-      <div style={{ marginBottom: 15 }}>
-        <button onClick={() => setFilter("all")}>All</button>
-        <button onClick={() => setFilter("high")}>High</button>
-        <button onClick={() => setFilter("medium")}>Medium</button>
-        <button onClick={() => setFilter("low")}>Low</button>
-      </div>
-
-      {/* COUNTRY FILTER */}
-      <div style={{ marginBottom: 15 }}>
-        <b>Country: </b>
-        <select onChange={(e) => setCountryFilter(e.target.value)}>
-          {countries.map((c) => (
-            <option key={c} value={c}>{c}</option>
+        {/* FILTERS */}
+        <div style={{ marginBottom: 20, display: "flex", gap: 10, flexWrap: "wrap" }}>
+          
+          {/* QUALITY */}
+          {["all", "high", "medium", "low"].map((q) => (
+            <button
+              key={q}
+              onClick={() => setFilter(q)}
+              style={{
+                background: filter === q ? "#ffffff" : "#1f1f23",
+                color: filter === q ? "#000" : "#fff",
+                border: "1px solid #2a2a2e",
+                padding: "6px 12px",
+                borderRadius: 8,
+                cursor: "pointer",
+              }}
+            >
+              {q.toUpperCase()}
+            </button>
           ))}
-        </select>
-      </div>
 
-      {/* SERVICE FILTER */}
-      <div style={{ marginBottom: 20 }}>
-        <b>Service: </b>
-        <select onChange={(e) => setServiceFilter(e.target.value)}>
-          {services.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-      </div>
+          {/* COUNTRY */}
+          <select
+            onChange={(e) => setCountryFilter(e.target.value)}
+            style={{
+              background: "#1f1f23",
+              color: "#fff",
+              border: "1px solid #2a2a2e",
+              padding: 6,
+              borderRadius: 8,
+            }}
+          >
+            {countries.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
 
-      {/* LEADS */}
-      {filteredLeads.map((lead) => (
-        <div
-          key={lead.id}
-          style={{
-            border: "1px solid #ddd",
-            padding: 15,
-            marginBottom: 12,
-            borderRadius: 10,
-          }}
-        >
-          <h3>{lead.client_name || "No Name"}</h3>
-
-          <p><b>Service:</b> {lead.service_needed}</p>
-          <p><b>Budget:</b> {lead.budget}</p>
-          <p><b>City:</b> {lead.city}</p>
-          <p><b>Country:</b> {lead.country}</p>
-          <p><b>Quality:</b> {lead.lead_quality}</p>
+          {/* SERVICE */}
+          <select
+            onChange={(e) => setServiceFilter(e.target.value)}
+            style={{
+              background: "#1f1f23",
+              color: "#fff",
+              border: "1px solid #2a2a2e",
+              padding: 6,
+              borderRadius: 8,
+            }}
+          >
+            {services.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
         </div>
-      ))}
+
+        {/* EMPTY STATE */}
+        {leads.length === 0 ? (
+          <div style={{ color: "#a1a1aa" }}>
+            <h3>No fresh leads</h3>
+            <p>Try changing filters or wait for new ones.</p>
+          </div>
+        ) : (
+          leads.map((lead) => (
+            <div
+              key={lead.id}
+              style={{
+                background: "#161618",
+                border: "1px solid #2a2a2e",
+                padding: 16,
+                marginBottom: 12,
+                borderRadius: 14,
+                transition: "0.2s",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.borderColor = "#3f3f46")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.borderColor = "#2a2a2e")
+              }
+            >
+              <h3 style={{ marginBottom: 8 }}>
+                {lead.client_name || "No Name"}
+              </h3>
+
+              <p style={{ color: "#a1a1aa" }}>
+                Service: <span style={{ color: "#fff" }}>{lead.service_needed}</span>
+              </p>
+
+              <p style={{ color: "#a1a1aa" }}>
+                Budget: <span style={{ color: "#fff" }}>{lead.budget}</span>
+              </p>
+
+              <p style={{ color: "#71717a" }}>
+                {lead.city}, {lead.country}
+              </p>
+
+              <p style={{ color: "#a1a1aa" }}>
+                Quality: <span style={{ color: "#fff" }}>{lead.lead_quality}</span>
+              </p>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
