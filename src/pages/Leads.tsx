@@ -4,84 +4,58 @@ import { supabase } from "../lib/supabase";
 export default function Leads() {
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     fetchLeads();
   }, []);
 
-  const fetchLeads = async () => {
+  async function fetchLeads() {
     setLoading(true);
 
     const { data, error } = await supabase
       .from("leads")
       .select("*");
 
-    console.log("SUPABASE DATA:", data);
-    console.log("SUPABASE ERROR:", error);
+    console.log("DATA:", data);
+    console.log("ERROR:", error);
 
     if (error) {
-      console.error(error);
+      setErrorMsg(error.message);
     } else {
       setLeads(data || []);
     }
 
     setLoading(false);
-  };
+  }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Fresh Leads 🚀</h1>
+    <div style={{ padding: "20px" }}>
+      <h1>SUPABASE TEST PAGE</h1>
 
+      <p>Loading: {loading ? "YES" : "NO"}</p>
       <p>Total Leads: {leads.length}</p>
 
-      <pre
-        style={{
-          background: "#f4f4f4",
-          padding: 10,
-          borderRadius: 10,
-          overflow: "auto",
-        }}
-      >
-        {JSON.stringify(leads, null, 2)}
-      </pre>
-
-      {loading ? (
-        <p>Loading leads...</p>
-      ) : leads.length === 0 ? (
-        <p>No leads found in database</p>
-      ) : (
-        leads.map((lead) => (
-          <div
-            key={lead.id}
-            style={{
-              padding: 15,
-              marginBottom: 12,
-              border: "1px solid #ddd",
-              borderRadius: 10,
-              background: "#fff",
-              color: "#000",
-            }}
-          >
-            <h2>{lead.name}</h2>
-
-            <p>
-              <strong>Email:</strong> {lead.email}
-            </p>
-
-            <p>
-              <strong>Phone:</strong> {lead.phone}
-            </p>
-
-            <p>
-              <strong>Company:</strong> {lead.company}
-            </p>
-
-            <p>
-              <strong>Status:</strong> {lead.status}
-            </p>
-          </div>
-        ))
+      {errorMsg && (
+        <div style={{ color: "red" }}>
+          Error: {errorMsg}
+        </div>
       )}
+
+      <hr />
+
+      {leads.map((lead) => (
+        <div
+          key={lead.id}
+          style={{
+            border: "1px solid #ccc",
+            marginBottom: "10px",
+            padding: "10px",
+          }}
+        >
+          <pre>{JSON.stringify(lead, null, 2)}</pre>
+        </div>
+      ))}
     </div>
   );
 }
