@@ -13,7 +13,7 @@ type Lead = {
   created_at: string;
 };
 
-const HomePage: React.FC = () => {
+const IndexPage: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,11 +32,13 @@ const HomePage: React.FC = () => {
 
         if (error) {
           console.error("Supabase error:", error);
+          setLeads([]);
         } else {
           setLeads(data || []);
         }
       } catch (err) {
         console.error("Failed to fetch leads", err);
+        setLeads([]);
       } finally {
         setLoading(false);
       }
@@ -58,11 +60,15 @@ const HomePage: React.FC = () => {
           <LeadCard
             key={idx}
             lead={{
-              client_name: lead.client_name,
-              service_needed: lead.service_needed,
-              description: lead.description,
-              contact_email: lead.contact_email,
-              contact_phone: lead.contact_phone,
+              title: lead.service_needed || lead.client_name,
+              description: lead.description || "No description provided",
+              link: lead.contact_email
+                ? `mailto:${lead.contact_email}`
+                : lead.contact_phone
+                ? `tel:${lead.contact_phone}`
+                : "#",
+              tags: lead.skill ? [lead.skill] : [],
+              isLocked: false,
             }}
           />
         ))
@@ -71,4 +77,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default IndexPage;
