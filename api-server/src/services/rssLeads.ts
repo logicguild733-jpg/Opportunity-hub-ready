@@ -1,19 +1,14 @@
-import fetch from "node-fetch";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  "https://qnkxrxxwfikhrlirfleg.supabase.co",
-  "sb_publishable_exYuiUhOVuWEyPqROu4p5A_gCWtb89S"
-);
+import { supabase } from "../lib/supabase";
 
 export async function fetchRSSLeads() {
   try {
-    // ⚠️ Replace later with real RSS feeds
     const rssUrl = "https://example.com/rss.xml";
 
-    await fetch(rssUrl); // just to simulate call
+    const response = await fetch(rssUrl);
+    const text = await response.text();
 
-    // TEMP leads (but now REAL DB insert)
+    console.log("RSS fetched:", text.length);
+
     const leads = [
       {
         title: "Urgent: Need Arabic Teacher",
@@ -25,11 +20,10 @@ export async function fetchRSSLeads() {
         title: "Hiring Business Coach",
         description: "Startup needs part-time business coach",
         link: "https://example.com/coach",
-        tags: "Business Coach"
+        tags: "Business Coaching"
       }
     ];
 
-    // ✅ INSERT INTO SUPABASE
     const insertData = leads.map((lead) => ({
       client_name: lead.title,
       service_needed: lead.tags,
@@ -41,7 +35,9 @@ export async function fetchRSSLeads() {
       created_at: new Date().toISOString()
     }));
 
-    const { error } = await supabase.from("demand_leads").insert(insertData);
+    const { error } = await supabase
+      .from("demand_leads")
+      .insert(insertData);
 
     if (error) {
       console.error("RSS insert error:", error);
