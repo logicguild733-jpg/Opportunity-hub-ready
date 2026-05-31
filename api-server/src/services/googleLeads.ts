@@ -1,61 +1,80 @@
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  "https://qnkxrxxwfikhrlirfleg.supabase.co",
-  "sb_publishable_exYuiUhOVuWEyPqROu4p5A_gCWtb89S"
-);
+import React, { useEffect, useState } from "react";
+import AppLayout from "../components/AppLayout";
+import LeadCard from "../components/LeadCard";
+import { supabase } from "../lib/supabase";
 
 type Lead = {
-  title: string;
+  client_name: string;
   description: string;
-  link: string;
-  tags?: string;
+  service_needed: string;
+  contact_email?: string;
+  contact_phone?: string;
+  skill?: string;
+  created_at: string;
 };
 
-// Simple cache
-const cache: { [key: string]: { leads: Lead[]; timestamp: number } } = {};
-const CACHE_DURATION = 1000 * 60 * 60 * 4; // 4 hours
+const IndexPage: React.FC = () => {
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export async function getCachedGoogleLeads(keywords: string[]): Promise<Lead[]> {
-  const cacheKey = keywords.sort().join(",");
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        const tenDaysAgo = new Date();
+        tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
 
-  if (cache[cacheKey] && Date.now() - cache[cacheKey].timestamp < CACHE_DURATION) {
-    return cache[cacheKey].leads;
-  }
+        const { data, error } = await supabase
+          .from("demand_leads")
+          .select("*")
+          .gte("created_at", tenDaysAgo.toISOString())
+          .order("created_at", { ascending: false })
+          .limit(20);
 
-  try {
-    // ⚠️ TEMP: still mock, but now we SAVE to Supabase
-    const leads: Lead[] = keywords.map((kw, i) => ({
-      title: `Need ${kw} expert urgently`,
-      description: `Client is looking for ${kw} service`,
-      link: `https://example.com/${kw}`,
-      tags: kw
-    }));
+        if (error) {
+          console.error("Supabase error:", error);
+          setLeads([]);
+        } else {
+          setLeads(data || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch leads", err);
+        setLeads([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // ✅ INSERT INTO SUPABASE (IMPORTANT)
-    const insertData = leads.map((lead) => ({
-      client_name: lead.title,
-      service_needed: lead.tags,
-      description: lead.description,
-      contact_email: null,
-      contact_phone: null,
-      skill: lead.tags,
-      country: "Global",
-      created_at: new Date().toISOString()
-    }));
+    fetchLeads();
+  }, []);
 
-    const { error } = await supabase.from("demand_leads").insert(insertData);
+  return (
+    <AppLayout>
+      <h1 className="text-2xl font-bold mb-4">Leads Dashboard</h1>
 
-    if (error) {
-      console.error("Insert error:", error);
-    }
+      {loading ? (
+        <p>Loading leads...</p>
+      ) : leads.length === 0 ? (
+        <p>No leads available</p>
+      ) : (
+        leads.map((lead, idx) => (
+          <LeadCard
+            key={idx}
+            lead={{
+              title: lead.service_needed || lead.client_name,
+              description: lead.description || "No description provided",
+              link: lead.contact_email
+                ? `mailto:${lead.contact_email}`
+                : lead.contact_phone
+                ? `tel:${lead.contact_phone}`
+                : "#",
+              tags: lead.skill ? [lead.skill] : [],
+              isLocked: false,
+            }}
+          />
+        ))
+      )}
+    </AppLayout>
+  );
+};
 
-    // Save to cache
-    cache[cacheKey] = { leads, timestamp: Date.now() };
-
-    return leads;
-  } catch (err) {
-    console.error("Google leads fetch error:", err);
-    return [];
-  }
-}
+export default IndexPage;
