@@ -14,7 +14,7 @@ export default function Leads() {
     setLoading(true);
 
     const { data, error } = await supabase
-      .from("leads")
+      .from("demand_leads")
       .select("*");
 
     console.log("DATA:", data);
