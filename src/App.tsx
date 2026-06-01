@@ -1,212 +1,139 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 
-function App() {
-  const [leads, setLeads] = useState<any[]>([]);
-  const [filter, setFilter] = useState("all");
-  const [countryFilter, setCountryFilter] = useState("all");
-  const [serviceFilter, setServiceFilter] = useState("all");
-  const [loading, setLoading] = useState(true);
+type TabType = "demand" | "supply" | "saas";
+
+export default function App() {
+  const [tab, setTab] = useState<TabType>("demand");
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getLeads();
-  }, [filter, countryFilter, serviceFilter]);
+    fetchData();
+  }, [tab]);
 
-  const getLeads = async () => {
+  const fetchData = async () => {
     setLoading(true);
     setError(null);
 
-    try {
-      // ✅ ABSOLUTE MINIMAL QUERY (NO FILTER THAT CAN HIDE DATA)
-      let query = supabase
-        .from("leads")
-        .select("*")
-        .order("created_at", { ascending: false });
+    let table = "";
 
-      // Optional filters (only applied AFTER we confirm data works)
-      if (filter !== "all") {
-        query = query.eq("lead_quality", filter);
-      }
+    // 🔥 FIXED SINGLE SOURCE SYSTEM
+    if (tab === "demand") table = "demand_leads";
+    if (tab === "supply") table = "supply_leads";
+    if (tab === "saas") table = "saas_leads";
 
-      if (countryFilter !== "all") {
-        query = query.eq("country", countryFilter);
-      }
+    const { data, error } = await supabase
+      .from(table)
+      .select("*")
+      .order("created_at", { ascending: false });
 
-      if (serviceFilter !== "all") {
-        query = query.eq("service_needed", serviceFilter);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error("Supabase ERROR:", error);
-        setError(error.message);
-        setLeads([]);
-        return;
-      }
-
-      console.log("✅ SUPABASE LEADS:", data);
-
-      setLeads(data || []);
-    } catch (err: any) {
-      console.error("❌ Unexpected ERROR:", err);
-      setError(err.message || "Unexpected error");
-      setLeads([]);
-    } finally {
-      setLoading(false);
+    if (error) {
+      console.error("Supabase error:", error);
+      setError(error.message);
+      setData([]);
+    } else {
+      setData(data || []);
     }
+
+    setLoading(false);
   };
 
-  // SAFE DROPDOWNS (never crash even if leads empty)
-  const countries = [
-    "all",
-    ...new Set(leads.map((l) => l.country).filter(Boolean)),
-  ];
-
-  const services = [
-    "all",
-    ...new Set(leads.map((l) => l.service_needed).filter(Boolean)),
-  ];
-
   return (
-    <div
-      style={{
-        background: "#0f0f10",
-        minHeight: "100vh",
-        color: "#ffffff",
-        fontFamily: "sans-serif",
-        padding: 20,
-      }}
-    >
-      <div style={{ maxWidth: 900, margin: "0 auto" }}>
-        <h1 style={{ marginBottom: 20 }}>Supabase Leads</h1>
+    <div style={{ padding: 20, fontFamily: "sans-serif" }}>
+      <h1>🚀 Opportunity Hub</h1>
 
-        {/* DEBUG INFO PANEL */}
-        <div style={{ marginBottom: 10, color: "#a1a1aa" }}>
-          <p>Leads Count: {leads.length}</p>
-          {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      {/* 🔵 TABS */}
+      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+        <button onClick={() => setTab("demand")}>
+          Demand Leads
+        </button>
+
+        <button onClick={() => setTab("supply")}>
+          Supply Jobs
+        </button>
+
+        <button onClick={() => setTab("saas")}>
+          SaaS Leads
+        </button>
+      </div>
+
+      {/* 🔥 STATUS */}
+      <div style={{ marginBottom: 10 }}>
+        {loading && <p>Loading...</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {!loading && !error && <p>Total: {data.length}</p>}
+      </div>
+
+      {/* 🧠 EMPTY STATE (IMPORTANT BUSINESS LOGIC) */}
+      {!loading && data.length === 0 && (
+        <div style={{ padding: 20, border: "1px solid #ddd" }}>
+          <h3>No leads found</h3>
+
+          {tab === "demand" && (
+            <div>
+              <p>Try:</p>
+              <ul>
+                <li>Change skill or country filter</li>
+                <li>Check Supply Jobs</li>
+                <li>Become SaaS reseller (earn commission)</li>
+              </ul>
+            </div>
+          )}
+
+          {tab === "supply" && (
+            <div>
+              <p>No jobs available.</p>
+              <ul>
+                <li>Check Demand Leads</li>
+                <li>Apply for SaaS opportunities</li>
+              </ul>
+            </div>
+          )}
+
+          {tab === "saas" && (
+            <div>
+              <p>No SaaS leads available.</p>
+              <ul>
+                <li>Invite businesses</li>
+                <li>Try Demand Leads</li>
+              </ul>
+            </div>
+          )}
         </div>
+      )}
 
-        {/* FILTERS */}
-        <div
-          style={{
-            marginBottom: 20,
-            display: "flex",
-            gap: 10,
-            flexWrap: "wrap",
-          }}
-        >
-          {/* QUALITY */}
-          {["all", "high", "medium", "low"].map((q) => (
-            <button
-              key={q}
-              onClick={() => setFilter(q)}
-              style={{
-                background: filter === q ? "#ffffff" : "#1f1f23",
-                color: filter === q ? "#000" : "#fff",
-                border: "1px solid #2a2a2e",
-                padding: "6px 12px",
-                borderRadius: 8,
-                cursor: "pointer",
-              }}
-            >
-              {q.toUpperCase()}
-            </button>
-          ))}
-
-          {/* COUNTRY */}
-          <select
-            value={countryFilter}
-            onChange={(e) => setCountryFilter(e.target.value)}
-            style={{
-              background: "#1f1f23",
-              color: "#fff",
-              border: "1px solid #2a2a2e",
-              padding: 6,
-              borderRadius: 8,
-            }}
-          >
-            {countries.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-
-          {/* SERVICE */}
-          <select
-            value={serviceFilter}
-            onChange={(e) => setServiceFilter(e.target.value)}
-            style={{
-              background: "#1f1f23",
-              color: "#fff",
-              border: "1px solid #2a2a2e",
-              padding: 6,
-              borderRadius: 8,
-            }}
-          >
-            {services.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* LOADING */}
-        {loading && (
-          <div style={{ color: "#a1a1aa" }}>Loading leads from Supabase...</div>
-        )}
-
-        {/* EMPTY STATE */}
-        {!loading && leads.length === 0 && !error && (
-          <div style={{ color: "#a1a1aa" }}>
-            <h3>No leads found</h3>
-            <p>
-              Either table is empty OR Supabase RLS is blocking access.
-            </p>
-          </div>
-        )}
-
-        {/* LEADS LIST */}
-        {leads.map((lead) => (
+      {/* 📦 LEADS LIST */}
+      <div style={{ marginTop: 20 }}>
+        {data.map((item) => (
           <div
-            key={lead.id}
+            key={item.id}
             style={{
-              background: "#161618",
-              border: "1px solid #2a2a2e",
-              padding: 16,
-              marginBottom: 12,
-              borderRadius: 14,
+              border: "1px solid #ccc",
+              padding: 10,
+              marginBottom: 10,
+              borderRadius: 8,
             }}
           >
-            <h3>{lead.client_name || "No Name"}</h3>
+            {/* Universal display */}
+            <h3>
+              {item.client_name ||
+                item.company_name ||
+                item.business_name ||
+                "No Title"}
+            </h3>
 
-            <p>
-              Service: <b>{lead.service_needed}</b>
-            </p>
+            <p>{item.description}</p>
 
-            <p>
-              Budget: <b>{lead.budget}</b>
-            </p>
+            {item.skill && <p>Skill: {item.skill}</p>}
+            {item.required_skill && <p>Required: {item.required_skill}</p>}
+            {item.need_type && <p>Need: {item.need_type}</p>}
 
-            <p>
-              Location: {lead.city}, {lead.country}
-            </p>
-
-            <p>
-              Quality: <b>{lead.lead_quality}</b>
-            </p>
-
-            <p style={{ color: "#71717a", fontSize: 12 }}>
-              {lead.created_at}
-            </p>
+            <small>{item.country || "Global"}</small>
           </div>
         ))}
       </div>
     </div>
   );
 }
-
-export default App;
