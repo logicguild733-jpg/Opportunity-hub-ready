@@ -3,28 +3,37 @@ export const SKILLS = [
     category: "Teaching",
     skills: [
       "Math",
-      "Sociology",
-      "Psychology",
-      "Anthropology",
-      "World History",
-      "Economics",
-      "Law",
-      "Science",
+      "Physics",
       "Chemistry",
       "Biology",
-      "General Subjects"
+      "Science",
+      "Economics",
+      "Law",
+      "Psychology",
+      "Sociology",
+      "Anthropology",
+      "World History",
+      "General Subjects",
+      "SAT Preparation",
+      "IELTS Preparation",
+      "TOEFL Preparation"
     ]
   },
 
   {
     category: "Languages & Translation",
     skills: [
-      "Arabic",
       "English",
+      "Arabic",
       "Urdu",
       "Punjabi",
       "French",
-      "Pashto"
+      "German",
+      "Spanish",
+      "Pashto",
+      "Translation Services",
+      "Proofreading",
+      "Transcription"
     ]
   },
 
@@ -36,16 +45,20 @@ export const SKILLS = [
       "Hadith",
       "Hifz",
       "Fiqh",
-      "Qirat"
+      "Qirat",
+      "Islamic Studies"
     ]
   },
 
   {
     category: "Coaching",
     skills: [
+      "Life Coach",
       "Career Coach",
       "Business Coach",
-      "Self Help Coach"
+      "Self Help Coach",
+      "Fitness Coach",
+      "Mindset Coach"
     ]
   },
 
@@ -54,7 +67,10 @@ export const SKILLS = [
     skills: [
       "Canvas Painting",
       "Watercolor Painting",
-      "Arts & Crafts"
+      "Arts & Crafts",
+      "Illustration",
+      "Sketching",
+      "Portrait Art"
     ]
   },
 
@@ -63,8 +79,124 @@ export const SKILLS = [
     skills: [
       "WordPress",
       "Website Development",
+      "Frontend Development",
+      "Backend Development",
+      "Full Stack Development",
+      "Software Development",
+      "Mobile App Development",
+      "React",
+      "Next.js",
+      "Node.js",
+      "PHP",
+      "Laravel",
+      "Python",
+      "Java",
+      "C#",
+      "Flutter",
+      "Shopify",
+      "Webflow",
+      "Bubble",
+      "Automation",
+      "AI Development",
+      "Prompt Engineering",
+      "Cyber Security",
+      "Cloud Computing",
+      "Database Management"
+    ]
+  },
+
+  {
+    category: "Design",
+    skills: [
       "Graphic Design",
-      "SEO"
+      "Virtual Designer",
+      "Logo Design",
+      "Brand Identity Design",
+      "Social Media Design",
+      "Poster Design",
+      "Banner Design",
+      "Flyer Design",
+      "Packaging Design",
+      "Print Design",
+      "Presentation Design",
+      "UI Design",
+      "UX Design",
+      "Figma Design",
+      "Canva Design"
+    ]
+  },
+
+  {
+    category: "Digital Marketing",
+    skills: [
+      "SEO",
+      "Local SEO",
+      "Technical SEO",
+      "Digital Marketing",
+      "Social Media Marketing",
+      "Facebook Ads",
+      "Google Ads",
+      "Instagram Marketing",
+      "TikTok Marketing",
+      "Email Marketing",
+      "Affiliate Marketing",
+      "Lead Generation"
+    ]
+  },
+
+  {
+    category: "Content & Writing",
+    skills: [
+      "Content Writing",
+      "Copywriting",
+      "Blog Writing",
+      "Ghostwriting",
+      "Technical Writing",
+      "Script Writing",
+      "Resume Writing"
+    ]
+  },
+
+  {
+    category: "Video & Media",
+    skills: [
+      "Video Editing",
+      "YouTube Editing",
+      "Short Form Video Editing",
+      "Motion Graphics",
+      "Animation",
+      "2D Animation",
+      "3D Animation",
+      "Podcast Editing",
+      "Voice Over"
+    ]
+  },
+
+  {
+    category: "Business Services",
+    skills: [
+      "Virtual Assistant",
+      "Data Entry",
+      "Customer Support",
+      "Project Management",
+      "Recruitment",
+      "Sales",
+      "Bookkeeping",
+      "Accounting",
+      "Market Research"
+    ]
+  },
+
+  {
+    category: "Ecommerce",
+    skills: [
+      "Amazon FBA",
+      "Amazon VA",
+      "Shopify Store Management",
+      "Etsy Store Management",
+      "Product Listing",
+      "Product Research",
+      "Dropshipping"
     ]
   }
 ];
@@ -81,11 +213,11 @@ export const COUNTRIES = {
 
   tier2: [
     "UAE",
-    "Qatar",
     "Saudi Arabia",
+    "Qatar",
     "Kuwait",
-    "Oman",
-    "Bahrain"
+    "Bahrain",
+    "Oman"
   ],
 
   tier3: [
