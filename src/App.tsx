@@ -4,28 +4,97 @@ import { supabase } from "./lib/supabase";
 type TabType = "demand" | "supply" | "saas";
 
 const ALL_SKILLS = [
-  "Math","Science","Chemistry","Biology","Economics","Law",
-  "Psychology","Sociology","Anthropology","World History","General Subjects",
-  "English","Arabic","Urdu","Punjabi","French","Pashto","Translation Services",
-  "Tajweed","Tafseer","Hadith","Hifz","Fiqh","Qirat",
-  "Career Coach","Business Coach","Self Help Coach","Life Coach",
-  "Canvas Painting","Watercolor Painting","Arts & Crafts","Illustration",
-  "WordPress","Website Development","Frontend Development","Backend Development",
-  "Full Stack Development","Mobile App Development","Software Development",
-  "UI/UX Design","SEO","Digital Marketing","Social Media Marketing",
-  "Content Writing","Copywriting","Virtual Assistant","Data Entry",
-  "Lead Generation","Graphic Design","Logo Design","Brand Identity Design",
-  "Poster Design","Banner Design","Social Media Design","Packaging Design",
-  "Presentation Design","Print Design","UI Design","UX Design",
-  "Video Editing","Motion Graphics","Animation","YouTube Editing",
-  "Short Form Content","Podcast Editing","Bookkeeping","Accounting",
-  "Recruitment","Customer Support","Sales","Project Management"
+  "Math",
+  "Science",
+  "Chemistry",
+  "Biology",
+  "Economics",
+  "Law",
+  "Psychology",
+  "Sociology",
+  "Anthropology",
+  "World History",
+  "General Subjects",
+  "English",
+  "Arabic",
+  "Urdu",
+  "Punjabi",
+  "French",
+  "Pashto",
+  "Translation Services",
+  "Tajweed",
+  "Tafseer",
+  "Hadith",
+  "Hifz",
+  "Fiqh",
+  "Qirat",
+  "Career Coach",
+  "Business Coach",
+  "Self Help Coach",
+  "Life Coach",
+  "Canvas Painting",
+  "Watercolor Painting",
+  "Arts & Crafts",
+  "Illustration",
+  "WordPress",
+  "Website Development",
+  "Frontend Development",
+  "Backend Development",
+  "Full Stack Development",
+  "Mobile App Development",
+  "Software Development",
+  "UI/UX Design",
+  "SEO",
+  "Digital Marketing",
+  "Social Media Marketing",
+  "Content Writing",
+  "Copywriting",
+  "Virtual Assistant",
+  "Data Entry",
+  "Lead Generation",
+  "Graphic Design",
+  "Logo Design",
+  "Brand Identity Design",
+  "Poster Design",
+  "Banner Design",
+  "Social Media Design",
+  "Packaging Design",
+  "Presentation Design",
+  "Print Design",
+  "UI Design",
+  "UX Design",
+  "Video Editing",
+  "Motion Graphics",
+  "Animation",
+  "YouTube Editing",
+  "Short Form Content",
+  "Podcast Editing",
+  "Bookkeeping",
+  "Accounting",
+  "Recruitment",
+  "Customer Support",
+  "Sales",
+  "Project Management",
 ];
 
 const ALL_COUNTRIES = [
-  "USA","UK","Canada","Australia","Norway","Finland",
-  "UAE","Qatar","Saudi Arabia","Kuwait","Oman","Bahrain",
-  "Pakistan","India","Bangladesh","Sri Lanka","Nepal"
+  "USA",
+  "UK",
+  "Canada",
+  "Australia",
+  "Norway",
+  "Finland",
+  "UAE",
+  "Qatar",
+  "Saudi Arabia",
+  "Kuwait",
+  "Oman",
+  "Bahrain",
+  "Pakistan",
+  "India",
+  "Bangladesh",
+  "Sri Lanka",
+  "Nepal",
 ];
 
 export default function App() {
@@ -50,15 +119,25 @@ export default function App() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) return;
+    if (!user) {
+      setUserSkills([]);
+      return;
+    }
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("user_skills")
       .select("skill")
       .eq("user_id", user.id);
 
+    if (error) {
+      console.error(error);
+      return;
+    }
+
     setUserSkills(
-      (data || []).map((x) => String(x.skill))
+      (data || []).map((item) =>
+        String(item.skill).toLowerCase()
+      )
     );
   }
 
@@ -70,38 +149,47 @@ export default function App() {
     if (tab === "supply") table = "supply_leads";
     if (tab === "saas") table = "saas_leads";
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from(table)
       .select("*")
       .order("created_at", { ascending: false });
 
-    setData(data || []);
+    if (error) {
+      console.error(error);
+      setData([]);
+    } else {
+      setData(data || []);
+    }
+
     setLoading(false);
   }
 
   const filteredData = data.filter((item) => {
-    let skill = "";
+    let leadSkill = "";
 
-    if (tab === "demand")
-      skill = item.skill_needed || "";
+    if (tab === "demand") {
+      leadSkill = item.skill_needed || "";
+    }
 
-    if (tab === "supply")
-      skill = item.required_skill || "";
+    if (tab === "supply") {
+      leadSkill = item.required_skill || "";
+    }
 
-    if (tab === "saas")
-      skill = item.niche || "";
+    if (tab === "saas") {
+      leadSkill = item.niche || "";
+    }
 
     const userSkillMatch =
       userSkills.length === 0 ||
-      userSkills.some((s) =>
-        skill.toLowerCase().includes(s.toLowerCase())
+      userSkills.some((skill) =>
+        leadSkill.toLowerCase().includes(skill)
       );
 
     const manualSkillMatch =
       selectedSkill === "all" ||
-      skill.toLowerCase().includes(
-        selectedSkill.toLowerCase()
-      );
+      leadSkill
+        .toLowerCase()
+        .includes(selectedSkill.toLowerCase());
 
     const countryMatch =
       selectedCountry === "all" ||
@@ -126,10 +214,10 @@ export default function App() {
       <h1>🚀 Opportunity Hub</h1>
 
       <p>
-        My Skills:
+        My Skills:{" "}
         {userSkills.length > 0
-          ? " " + userSkills.join(", ")
-          : " No skills selected"}
+          ? userSkills.join(", ")
+          : "No skills selected"}
       </p>
 
       <div
@@ -142,15 +230,15 @@ export default function App() {
         }}
       >
         <button onClick={() => setTab("demand")}>
-          Demand
+          Demand Leads
         </button>
 
         <button onClick={() => setTab("supply")}>
-          Supply
+          Supply Jobs
         </button>
 
         <button onClick={() => setTab("saas")}>
-          SaaS
+          SaaS Leads
         </button>
       </div>
 
@@ -204,8 +292,7 @@ export default function App() {
       </div>
 
       <p>
-        Opportunities Found:
-        {filteredData.length}
+        Opportunities Found: {filteredData.length}
       </p>
 
       {loading ? (
@@ -225,7 +312,8 @@ export default function App() {
               {item.title ||
                 item.company_name ||
                 item.client_name ||
-                item.name}
+                item.name ||
+                "Opportunity"}
             </h3>
 
             <p>{item.description}</p>
@@ -236,21 +324,21 @@ export default function App() {
 
             {item.skill_needed && (
               <p>
-                Skill Needed:
+                <strong>Skill Needed:</strong>{" "}
                 {item.skill_needed}
               </p>
             )}
 
             {item.required_skill && (
               <p>
-                Required Skill:
+                <strong>Required Skill:</strong>{" "}
                 {item.required_skill}
               </p>
             )}
 
             {item.niche && (
               <p>
-                Niche:
+                <strong>Niche:</strong>{" "}
                 {item.niche}
               </p>
             )}
@@ -259,4 +347,4 @@ export default function App() {
       )}
     </div>
   );
-        }
+}
