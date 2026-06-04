@@ -5,16 +5,50 @@ type TabType = "demand" | "supply" | "saas";
 
 export default function App() {
   const [tab, setTab] = useState<TabType>("demand");
+
   const [data, setData] = useState<any[]>([]);
+  const [userSkills, setUserSkills] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [selectedSkill, setSelectedSkill] = useState("all");
   const [selectedCountry, setSelectedCountry] = useState("all");
 
   useEffect(() => {
-    fetchData();
+    initialize();
   }, [tab]);
+
+  async function initialize() {
+    await loadUserSkills();
+    await fetchData();
+  }
+
+  async function loadUserSkills() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setUserSkills([]);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("user_skills")
+      .select("skill")
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setUserSkills(
+      (data || []).map((item) =>
+        String(item.skill).toLowerCase()
+      )
+    );
+  }
 
   async function fetchData() {
     setLoading(true);
@@ -22,8 +56,13 @@ export default function App() {
 
     let table = "demand_leads";
 
-    if (tab === "supply") table = "supply_leads";
-    if (tab === "saas") table = "saas_leads";
+    if (tab === "supply") {
+      table = "supply_leads";
+    }
+
+    if (tab === "saas") {
+      table = "saas_leads";
+    }
 
     const { data, error } = await supabase
       .from(table)
@@ -42,16 +81,25 @@ export default function App() {
   }
 
   const filteredData = data.filter((item) => {
-    const skillValue =
-      item.skill ||
-      item.required_skill ||
-      "";
+    let leadSkill = "";
+
+    if (tab === "demand") {
+      leadSkill = item.skill_needed || "";
+    }
+
+    if (tab === "supply") {
+      leadSkill = item.required_skill || "";
+    }
+
+    if (tab === "saas") {
+      leadSkill = item.niche || "";
+    }
 
     const skillMatch =
-      selectedSkill === "all" ||
-      skillValue
-        .toLowerCase()
-        .includes(selectedSkill.toLowerCase());
+      userSkills.length === 0 ||
+      userSkills.some((skill) =>
+        leadSkill.toLowerCase().includes(skill)
+      );
 
     const countryMatch =
       selectedCountry === "all" ||
@@ -77,8 +125,7 @@ export default function App() {
         background: "#0f172a",
         color: "white",
         padding: "20px",
-        fontFamily:
-          "Inter, system-ui, sans-serif",
+        fontFamily: "Inter, system-ui, sans-serif",
       }}
     >
       <div
@@ -105,7 +152,19 @@ export default function App() {
           Earn First. Pay Later.
         </p>
 
-        {/* Tabs */}
+        <div
+          style={{
+            marginBottom: 20,
+            padding: 12,
+            background: "#1e293b",
+            borderRadius: 10,
+          }}
+        >
+          <strong>My Skills:</strong>{" "}
+          {userSkills.length > 0
+            ? userSkills.join(", ")
+            : "No skills selected"}
+        </div>
 
         <div
           style={{
@@ -137,181 +196,89 @@ export default function App() {
           </button>
         </div>
 
-        {/* Filters */}
-
-        <div
+        <select
+          value={selectedCountry}
+          onChange={(e) =>
+            setSelectedCountry(e.target.value)
+          }
           style={{
-            display: "flex",
-            gap: 10,
-            flexWrap: "wrap",
+            padding: 12,
+            borderRadius: 10,
+            background: "#1e293b",
+            color: "white",
+            border: "1px solid #334155",
             marginBottom: 20,
           }}
         >
-          <select
-            value={selectedSkill}
-            onChange={(e) =>
-              setSelectedSkill(e.target.value)
-            }
-            style={{
-              padding: 12,
-              borderRadius: 10,
-              background: "#1e293b",
-              color: "white",
-              border:
-                "1px solid #334155",
-            }}
-          >
-            <option value="all">
-              All Skills
-            </option>
-
-            <option>Math</option>
-            <option>Sociology</option>
-            <option>Psychology</option>
-            <option>Economics</option>
-
-            <option>Arabic</option>
-            <option>English</option>
-            <option>Urdu</option>
-            <option>French</option>
-
-            <option>Tajweed</option>
-            <option>Tafseer</option>
-            <option>Hadith</option>
-
-            <option>Career Coach</option>
-            <option>Business Coach</option>
-
-            <option>Graphic Design</option>
-            <option>SEO</option>
-            <option>WordPress</option>
-          </select>
-
-          <select
-            value={selectedCountry}
-            onChange={(e) =>
-              setSelectedCountry(
-                e.target.value
-              )
-            }
-            style={{
-              padding: 12,
-              borderRadius: 10,
-              background: "#1e293b",
-              color: "white",
-              border:
-                "1px solid #334155",
-            }}
-          >
-            <option value="all">
-              All Countries
-            </option>
-
-            <option>USA</option>
-            <option>UK</option>
-            <option>Canada</option>
-            <option>Australia</option>
-            <option>Norway</option>
-            <option>Finland</option>
-
-            <option>UAE</option>
-            <option>Qatar</option>
-            <option>Saudi Arabia</option>
-
-            <option>Pakistan</option>
-            <option>India</option>
-            <option>Bangladesh</option>
-          </select>
-        </div>
-
-        {/* Status */}
+          <option value="all">All Countries</option>
+          <option>USA</option>
+          <option>UK</option>
+          <option>Canada</option>
+          <option>Australia</option>
+          <option>UAE</option>
+          <option>Saudi Arabia</option>
+          <option>Pakistan</option>
+        </select>
 
         <div
           style={{
             background: "#111827",
-            border:
-              "1px solid #1f2937",
+            border: "1px solid #1f2937",
             padding: 15,
             borderRadius: 12,
             marginBottom: 20,
           }}
         >
           {loading && (
-            <p>
-              Loading opportunities...
-            </p>
+            <p>Loading opportunities...</p>
           )}
 
           {error && (
-            <p
-              style={{
-                color: "#ef4444",
-              }}
-            >
+            <p style={{ color: "#ef4444" }}>
               {error}
             </p>
           )}
 
           {!loading && !error && (
-            <p
-              style={{
-                color: "#cbd5e1",
-              }}
-            >
+            <p style={{ color: "#cbd5e1" }}>
               Opportunities Found:{" "}
               {filteredData.length}
             </p>
           )}
         </div>
 
-        {/* Empty State */}
-
         {!loading &&
           filteredData.length === 0 && (
             <div
               style={{
-                background:
-                  "#111827",
-                border:
-                  "1px solid #1f2937",
+                background: "#111827",
+                border: "1px solid #1f2937",
                 padding: 20,
                 borderRadius: 12,
+                marginBottom: 20,
               }}
             >
               <h3>
-                No opportunities
-                matched your filters
+                No matching opportunities right now
               </h3>
 
               <p>
-                Expand your skills or
-                country selection.
+                Try:
               </p>
 
               <ul>
-                <li>
-                  Check Demand Leads
-                </li>
-                <li>
-                  Check Supply Jobs
-                </li>
-                <li>
-                  Explore SaaS Leads
-                </li>
-                <li>
-                  Add more skills to
-                  increase matching
-                </li>
+                <li>Expand country filters</li>
+                <li>Add more skills</li>
+                <li>Check Supply Jobs</li>
+                <li>Explore SaaS Leads</li>
               </ul>
 
               <p>
-                More skills = more
+                More skills = more earning
                 opportunities.
               </p>
             </div>
           )}
-
-        {/* Leads */}
 
         <div
           style={{
@@ -319,77 +286,54 @@ export default function App() {
             gap: 16,
           }}
         >
-          {filteredData.map(
-            (item: any) => (
-              <div
-                key={item.id}
-                style={{
-                  background:
-                    "#111827",
-                  border:
-                    "1px solid #1f2937",
-                  borderRadius: 14,
-                  padding: 18,
-                  boxShadow:
-                    "0 4px 20px rgba(0,0,0,0.25)",
-                }}
-              >
-                <h3>
-                  {item.title ||
-                    item.client_name ||
-                    item.company_name ||
-                    item.business_name ||
-                    "Opportunity"}
-                </h3>
+          {filteredData.map((item) => (
+            <div
+              key={item.id}
+              style={{
+                background: "#111827",
+                border: "1px solid #1f2937",
+                borderRadius: 14,
+                padding: 18,
+              }}
+            >
+              <h3>
+                {item.title ||
+                  item.company_name ||
+                  item.name ||
+                  item.client_name ||
+                  "Opportunity"}
+              </h3>
 
+              <p>{item.description}</p>
+
+              <p>
+                🌍 {item.country || "Global"}
+              </p>
+
+              {item.skill_needed && (
                 <p>
-                  {item.description}
+                  <strong>Skill Needed:</strong>{" "}
+                  {item.skill_needed}
                 </p>
+              )}
 
-                {item.skill && (
-                  <p>
-                    <strong>
-                      Skill:
-                    </strong>{" "}
-                    {item.skill}
-                  </p>
-                )}
-
-                {item.required_skill && (
-                  <p>
-                    <strong>
-                      Required:
-                    </strong>{" "}
-                    {
-                      item.required_skill
-                    }
-                  </p>
-                )}
-
-                {item.need_type && (
-                  <p>
-                    <strong>
-                      Need:
-                    </strong>{" "}
-                    {item.need_type}
-                  </p>
-                )}
-
-                <p
-                  style={{
-                    color:
-                      "#94a3b8",
-                  }}
-                >
-                  🌍{" "}
-                  {item.country ||
-                    "Global"}
+              {item.required_skill && (
+                <p>
+                  <strong>Required Skill:</strong>{" "}
+                  {item.required_skill}
                 </p>
-              </div>
-            )
-          )}
+              )}
+
+              {item.niche && (
+                <p>
+                  <strong>Niche:</strong>{" "}
+                  {item.niche}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
-}
+                }
