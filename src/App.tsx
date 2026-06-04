@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
+import { matchLeadsForUser } from "./lib/matchLeads";
 
 type TabType = "demand" | "supply" | "saas";
 
@@ -111,6 +112,9 @@ export default function App() {
 
   async function initialize() {
     await loadUserSkills();
+
+    await matchLeadsForUser();
+
     await fetchData();
   }
 
