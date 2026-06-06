@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import leadsRouter from './routes/leads';
+import { fetchRSSLeads } from './services/rssLeads';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,15 +14,37 @@ app.use(cookieParser());
 
 // Dummy auth middleware
 app.use((req, res, next) => {
-  // For testing, assign default user
-  req.user = {
-    id: 'test-user-1',
-    email: 'logicguild733@gmail.com',
-    skills: ['teacher'],
-    plan: 'basic'
-  };
-  next();
+req.user = {
+id: 'test-user-1',
+email: 'logicguild733@gmail.com',
+skills: ['teacher'],
+plan: 'basic'
+};
+next();
 });
+
+// Run RSS import when server starts
+async function startImporters() {
+try {
+console.log('Starting RSS importer...');
+await fetchRSSLeads();
+console.log('RSS importer finished');
+} catch (err) {
+console.error('RSS importer failed:', err);
+}
+}
+
+startImporters();
+
+// Run every hour
+setInterval(async () => {
+try {
+console.log('Running scheduled RSS import...');
+await fetchRSSLeads();
+} catch (err) {
+console.error(err);
+}
+}, 60 * 60 * 1000);
 
 // Routes
 app.use('/api/leads', leadsRouter);
@@ -30,4 +53,4 @@ app.use('/api/leads', leadsRouter);
 app.get('/', (req, res) => res.send('API Server running'));
 
 // Start server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log("Server running on port ${PORT}"));
