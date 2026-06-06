@@ -1,51 +1,73 @@
+import Parser from "rss-parser";
 import { supabase } from "../lib/supabase";
 
+const parser = new Parser();
+
+const RSS_FEEDS = [
+"https://remoteok.com/remote-jobs.rss",
+"https://weworkremotely.com/categories/remote-customer-support-jobs.rss",
+"https://weworkremotely.com/categories/remote-programming-jobs.rss"
+];
+
 export async function fetchRSSLeads() {
+try {
+let inserted = 0;
+
+for (const feedUrl of RSS_FEEDS) {
   try {
-    const rssUrl = "https://example.com/rss.xml";
+    const feed = await parser.parseURL(feedUrl);
 
-    const response = await fetch(rssUrl);
-    const text = await response.text();
+    for (const item of feed.items || []) {
+      const title = item.title || "Untitled Opportunity";
+      const description =
+        item.contentSnippet ||
+        item.content ||
+        item.summary ||
+        "";
 
-    console.log("RSS fetched:", text.length);
+      const link = item.link || "";
 
-    const leads = [
-      {
-        title: "Urgent: Need Arabic Teacher",
-        description: "Looking for online Arabic teacher for kids",
-        link: "https://example.com/arabic",
-        tags: "Arabic"
-      },
-      {
-        title: "Hiring Business Coach",
-        description: "Startup needs part-time business coach",
-        link: "https://example.com/coach",
-        tags: "Business Coaching"
+      const { data: existing } = await supabase
+        .from("demand_leads")
+        .select("id")
+        .eq("client_name", title)
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        continue;
       }
-    ];
 
-    const insertData = leads.map((lead) => ({
-      client_name: lead.title,
-      service_needed: lead.tags,
-      description: lead.description,
-      contact_email: null,
-      contact_phone: null,
-      skill: lead.tags,
-      country: "Global",
-      created_at: new Date().toISOString()
-    }));
+      const { error } = await supabase
+        .from("demand_leads")
+        .insert({
+          client_name: title,
+          service_needed: "Remote Opportunity",
+          description,
+          contact_email: null,
+          contact_phone: null,
+          skill: "General",
+          country: "Global",
+          created_at: new Date().toISOString(),
+          link
+        });
 
-    const { error } = await supabase
-      .from("demand_leads")
-      .insert(insertData);
-
-    if (error) {
-      console.error("RSS insert error:", error);
+      if (!error) {
+        inserted++;
+      } else {
+        console.error(error);
+      }
     }
-
-    return leads;
-  } catch (err) {
-    console.error("RSS fetch error:", err);
-    return [];
+  } catch (feedError) {
+    console.error("Feed failed:", feedUrl, feedError);
   }
+}
+
+console.log(`Inserted ${inserted} RSS leads`);
+
+return inserted;
+
+} catch (err) {
+console.error("RSS import failed:", err);
+return 0;
+}
 }
