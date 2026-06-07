@@ -19,18 +19,17 @@ for (const feedUrl of RSS_FEEDS) {
 
     for (const item of feed.items || []) {
       const title = item.title || "Untitled Opportunity";
+
       const description =
         item.contentSnippet ||
         item.content ||
         item.summary ||
         "";
 
-      const link = item.link || "";
-
       const { data: existing } = await supabase
         .from("demand_leads")
         .select("id")
-        .eq("client_name", title)
+        .eq("title", title)
         .limit(1);
 
       if (existing && existing.length > 0) {
@@ -40,15 +39,21 @@ for (const feedUrl of RSS_FEEDS) {
       const { error } = await supabase
         .from("demand_leads")
         .insert({
+          type: "Demand",
+          source: feedUrl,
           client_name: title,
-          service_needed: "Remote Opportunity",
-          description,
+          skill_needed: "General",
+          description: description,
           contact_email: null,
           contact_phone: null,
-          skill: "General",
-          country: "Global",
-          created_at: new Date().toISOString(),
-          link
+          title: title,
+          category: "Remote Jobs",
+          subcategory: "RSS",
+          country_city: "Global",
+          budget: null,
+          currency: null,
+          contact_name: null,
+          created_at: new Date().toISOString()
         });
 
       if (!error) {
@@ -63,7 +68,6 @@ for (const feedUrl of RSS_FEEDS) {
 }
 
 console.log(`Inserted ${inserted} RSS leads`);
-
 return inserted;
 
 } catch (err) {
