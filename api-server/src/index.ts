@@ -59,7 +59,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('API Server running 🚀');
 });
 
-// Start server
-app.listen(PORT, () => {
+// 🔥 FIX IS HERE (VERY IMPORTANT)
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
