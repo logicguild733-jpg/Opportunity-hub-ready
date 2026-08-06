@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import leadsRouter from './routes/leads';
@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Dummy auth middleware
-app.use((req: any, res, next) => {
+app.use((req: any, res: Response, next: NextFunction) => {
   req.user = {
     id: 'test-user-1',
     email: 'logicguild733@gmail.com',
@@ -23,9 +23,9 @@ app.use((req: any, res, next) => {
   next();
 });
 
-// ✅ TEMP TEST ROUTE (IMPORTANT — to confirm working)
-app.get('/api/leads', (req, res) => {
-  res.json([{ title: 'Plan A working 🚀' }]);
+// ✅ Test route (IMPORTANT)
+app.get('/test', (req: Request, res: Response) => {
+  res.send('Backend working ✅');
 });
 
 // Run RSS import when server starts
@@ -51,11 +51,15 @@ setInterval(async () => {
   }
 }, 60 * 60 * 1000);
 
-// (Keep router too, but test route will override for now)
+// Routes
 app.use('/api/leads', leadsRouter);
 
 // Default route
-app.get('/', (req, res) => res.send('API Server running'));
+app.get('/', (req: Request, res: Response) => {
+  res.send('API Server running 🚀');
+});
 
-// ❗ FIXED STRING (this was broken before)
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
