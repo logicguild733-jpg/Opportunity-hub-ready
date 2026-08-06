@@ -13,44 +13,49 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Dummy auth middleware
-app.use((req, res, next) => {
-req.user = {
-id: 'test-user-1',
-email: 'logicguild733@gmail.com',
-skills: ['teacher'],
-plan: 'basic'
-};
-next();
+app.use((req: any, res, next) => {
+  req.user = {
+    id: 'test-user-1',
+    email: 'logicguild733@gmail.com',
+    skills: ['teacher'],
+    plan: 'basic'
+  };
+  next();
+});
+
+// ✅ TEMP TEST ROUTE (IMPORTANT — to confirm working)
+app.get('/api/leads', (req, res) => {
+  res.json([{ title: 'Plan A working 🚀' }]);
 });
 
 // Run RSS import when server starts
 async function startImporters() {
-try {
-console.log('Starting RSS importer...');
-await fetchRSSLeads();
-console.log('RSS importer finished');
-} catch (err) {
-console.error('RSS importer failed:', err);
-}
+  try {
+    console.log('Starting RSS importer...');
+    await fetchRSSLeads();
+    console.log('RSS importer finished');
+  } catch (err) {
+    console.error('RSS importer failed:', err);
+  }
 }
 
 startImporters();
 
 // Run every hour
 setInterval(async () => {
-try {
-console.log('Running scheduled RSS import...');
-await fetchRSSLeads();
-} catch (err) {
-console.error(err);
-}
+  try {
+    console.log('Running scheduled RSS import...');
+    await fetchRSSLeads();
+  } catch (err) {
+    console.error(err);
+  }
 }, 60 * 60 * 1000);
 
-// Routes
+// (Keep router too, but test route will override for now)
 app.use('/api/leads', leadsRouter);
 
 // Default route
 app.get('/', (req, res) => res.send('API Server running'));
 
-// Start server
-app.listen(PORT, () => console.log("Server running on port ${PORT}"));
+// ❗ FIXED STRING (this was broken before)
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
