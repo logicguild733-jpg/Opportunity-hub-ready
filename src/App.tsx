@@ -1,101 +1,27 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
-import { matchLeadsForUser } from "./lib/matchLeads";
+// ❌ removed matchLeadsForUser from auto flow
 
 type TabType = "demand" | "supply" | "saas";
 
 const ALL_SKILLS = [
-  "Math",
-  "Science",
-  "Chemistry",
-  "Biology",
-  "Economics",
-  "Law",
-  "Psychology",
-  "Sociology",
-  "Anthropology",
-  "World History",
-  "General Subjects",
-  "English",
-  "Arabic",
-  "Urdu",
-  "Punjabi",
-  "French",
-  "Pashto",
-  "Translation Services",
-  "Tajweed",
-  "Tafseer",
-  "Hadith",
-  "Hifz",
-  "Fiqh",
-  "Qirat",
-  "Career Coach",
-  "Business Coach",
-  "Self Help Coach",
-  "Life Coach",
-  "Canvas Painting",
-  "Watercolor Painting",
-  "Arts & Crafts",
-  "Illustration",
-  "WordPress",
-  "Website Development",
-  "Frontend Development",
-  "Backend Development",
-  "Full Stack Development",
-  "Mobile App Development",
-  "Software Development",
-  "UI/UX Design",
-  "SEO",
-  "Digital Marketing",
-  "Social Media Marketing",
-  "Content Writing",
-  "Copywriting",
-  "Virtual Assistant",
-  "Data Entry",
-  "Lead Generation",
-  "Graphic Design",
-  "Logo Design",
-  "Brand Identity Design",
-  "Poster Design",
-  "Banner Design",
-  "Social Media Design",
-  "Packaging Design",
-  "Presentation Design",
-  "Print Design",
-  "UI Design",
-  "UX Design",
-  "Video Editing",
-  "Motion Graphics",
-  "Animation",
-  "YouTube Editing",
-  "Short Form Content",
-  "Podcast Editing",
-  "Bookkeeping",
-  "Accounting",
-  "Recruitment",
-  "Customer Support",
-  "Sales",
-  "Project Management",
+  "Math","Science","Chemistry","Biology","Economics","Law","Psychology","Sociology","Anthropology","World History","General Subjects",
+  "English","Arabic","Urdu","Punjabi","French","Pashto","Translation Services",
+  "Tajweed","Tafseer","Hadith","Hifz","Fiqh","Qirat",
+  "Career Coach","Business Coach","Self Help Coach","Life Coach",
+  "Canvas Painting","Watercolor Painting","Arts & Crafts","Illustration",
+  "WordPress","Website Development","Frontend Development","Backend Development","Full Stack Development","Mobile App Development","Software Development",
+  "UI/UX Design","SEO","Digital Marketing","Social Media Marketing","Content Writing","Copywriting",
+  "Virtual Assistant","Data Entry","Lead Generation",
+  "Graphic Design","Logo Design","Brand Identity Design","Poster Design","Banner Design","Social Media Design","Packaging Design","Presentation Design","Print Design","UI Design","UX Design",
+  "Video Editing","Motion Graphics","Animation","YouTube Editing","Short Form Content","Podcast Editing",
+  "Bookkeeping","Accounting","Recruitment","Customer Support","Sales","Project Management",
 ];
 
 const ALL_COUNTRIES = [
-  "USA",
-  "UK",
-  "Canada",
-  "Australia",
-  "Norway",
-  "Finland",
-  "UAE",
-  "Qatar",
-  "Saudi Arabia",
-  "Kuwait",
-  "Oman",
-  "Bahrain",
-  "Pakistan",
-  "India",
-  "Bangladesh",
-  "Sri Lanka",
-  "Nepal",
+  "USA","UK","Canada","Australia","Norway","Finland",
+  "UAE","Qatar","Saudi Arabia","Kuwait","Oman","Bahrain",
+  "Pakistan","India","Bangladesh","Sri Lanka","Nepal",
 ];
 
 export default function App() {
@@ -112,9 +38,6 @@ export default function App() {
 
   async function initialize() {
     await loadUserSkills();
-
-    await matchLeadsForUser();
-
     await fetchData();
   }
 
@@ -140,7 +63,7 @@ export default function App() {
 
     setUserSkills(
       (data || []).map((item) =>
-        String(item.skill).toLowerCase()
+        String(item.skill || "").toLowerCase()
       )
     );
   }
@@ -149,7 +72,6 @@ export default function App() {
     setLoading(true);
 
     let table = "demand_leads";
-
     if (tab === "supply") table = "supply_leads";
     if (tab === "saas") table = "saas_leads";
 
@@ -171,39 +93,28 @@ export default function App() {
   const filteredData = data.filter((item) => {
     let leadSkill = "";
 
-    if (tab === "demand") {
-      leadSkill = item.skill_needed || "";
-    }
+    if (tab === "demand") leadSkill = item.skill_needed || "";
+    if (tab === "supply") leadSkill = item.required_skill || "";
+    if (tab === "saas") leadSkill = item.niche || "";
 
-    if (tab === "supply") {
-      leadSkill = item.required_skill || "";
-    }
-
-    if (tab === "saas") {
-      leadSkill = item.niche || "";
-    }
+    const leadSkillLower = String(leadSkill).toLowerCase();
 
     const userSkillMatch =
       userSkills.length === 0 ||
       userSkills.some((skill) =>
-        leadSkill.toLowerCase().includes(skill)
+        leadSkillLower.includes(skill)
       );
 
     const manualSkillMatch =
       selectedSkill === "all" ||
-      leadSkill
-        .toLowerCase()
-        .includes(selectedSkill.toLowerCase());
+      leadSkillLower.includes(selectedSkill.toLowerCase());
 
     const countryMatch =
       selectedCountry === "all" ||
-      item.country === selectedCountry;
+      String(item.country || "").toLowerCase() ===
+        selectedCountry.toLowerCase();
 
-    return (
-      userSkillMatch &&
-      manualSkillMatch &&
-      countryMatch
-    );
+    return userSkillMatch && manualSkillMatch && countryMatch;
   });
 
   return (
@@ -224,80 +135,29 @@ export default function App() {
           : "No skills selected"}
       </p>
 
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          marginTop: 20,
-          marginBottom: 20,
-          flexWrap: "wrap",
-        }}
-      >
-        <button onClick={() => setTab("demand")}>
-          Demand Leads
-        </button>
-
-        <button onClick={() => setTab("supply")}>
-          Supply Jobs
-        </button>
-
-        <button onClick={() => setTab("saas")}>
-          SaaS Leads
-        </button>
+      <div style={{ display: "flex", gap: 10, margin: "20px 0", flexWrap: "wrap" }}>
+        <button onClick={() => setTab("demand")}>Demand Leads</button>
+        <button onClick={() => setTab("supply")}>Supply Jobs</button>
+        <button onClick={() => setTab("saas")}>SaaS Leads</button>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          flexWrap: "wrap",
-          marginBottom: 20,
-        }}
-      >
-        <select
-          value={selectedSkill}
-          onChange={(e) =>
-            setSelectedSkill(e.target.value)
-          }
-        >
-          <option value="all">
-            All Skills
-          </option>
-
+      <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+        <select value={selectedSkill} onChange={(e) => setSelectedSkill(e.target.value)}>
+          <option value="all">All Skills</option>
           {ALL_SKILLS.map((skill) => (
-            <option
-              key={skill}
-              value={skill}
-            >
-              {skill}
-            </option>
+            <option key={skill} value={skill}>{skill}</option>
           ))}
         </select>
 
-        <select
-          value={selectedCountry}
-          onChange={(e) =>
-            setSelectedCountry(e.target.value)
-          }
-        >
-          <option value="all">
-            All Countries
-          </option>
-
+        <select value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value)}>
+          <option value="all">All Countries</option>
           {ALL_COUNTRIES.map((country) => (
-            <option
-              key={country}
-              value={country}
-            >
-              {country}
-            </option>
+            <option key={country} value={country}>{country}</option>
           ))}
         </select>
       </div>
 
-      <p>
-        Opportunities Found: {filteredData.length}
-      </p>
+      <p>Opportunities Found: {filteredData.length}</p>
 
       {loading ? (
         <p>Loading...</p>
@@ -322,29 +182,18 @@ export default function App() {
 
             <p>{item.description}</p>
 
-            <p>
-              🌍 {item.country || "Global"}
-            </p>
+            <p>🌍 {item.country || "Global"}</p>
 
             {item.skill_needed && (
-              <p>
-                <strong>Skill Needed:</strong>{" "}
-                {item.skill_needed}
-              </p>
+              <p><strong>Skill Needed:</strong> {item.skill_needed}</p>
             )}
 
             {item.required_skill && (
-              <p>
-                <strong>Required Skill:</strong>{" "}
-                {item.required_skill}
-              </p>
+              <p><strong>Required Skill:</strong> {item.required_skill}</p>
             )}
 
             {item.niche && (
-              <p>
-                <strong>Niche:</strong>{" "}
-                {item.niche}
-              </p>
+              <p><strong>Niche:</strong> {item.niche}</p>
             )}
           </div>
         ))
