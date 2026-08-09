@@ -1,70 +1,51 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 
-function App() {
-  const [opportunities, setOpportunities] = useState<any[]>([]);
+type Opportunity = {
+  id: number;
+  title: string;
+};
 
-  // ✅ 1. FETCH DATA FROM SUPABASE (NORMAL APP FLOW)
-  const fetchOpportunities = async () => {
+function App() {
+  const [data, setData] = useState<Opportunity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
     const { data, error } = await supabase
-      .from("opportunities") // ⚠️ your table name
+      .from("opportunities")
       .select("*");
 
     if (error) {
-      console.error("FETCH ERROR:", error);
+      console.error("Supabase error:", error);
+      setError(error.message);
     } else {
-      setOpportunities(data || []);
+      setData(data || []);
     }
+
+    setLoading(false);
   };
 
-  // ✅ 2. ONE-TIME REAL DATA INSERT (RUN ONLY ONCE)
-  const insertRealDataOnce = async () => {
-    const alreadyInserted = localStorage.getItem("realDataInserted");
-
-    if (alreadyInserted) return; // 🚫 prevents loop
-
-    try {
-      const res = await fetch("https://remotive.com/api/remote-jobs");
-      const json = await res.json();
-
-      const jobs = json.jobs.slice(0, 10);
-
-      for (const job of jobs) {
-        await supabase.from("opportunities").insert({
-          title: job.title,
-          country: job.candidate_required_location || "Global",
-          skill: job.category,
-          type: "Demand Leads",
-        });
-      }
-
-      localStorage.setItem("realDataInserted", "true");
-
-      console.log("✅ REAL DATA INSERTED");
-    } catch (err) {
-      console.error("INSERT ERROR:", err);
-    }
-  };
-
-  // ✅ 3. RUN ON LOAD
-  useEffect(() => {
-    insertRealDataOnce();   // 🔥 fills DB first time only
-    fetchOpportunities();   // 🔥 loads data into UI
-  }, []);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div style={{ padding: "20px" }}>
       <h1>Opportunities</h1>
 
-      <p>Opportunities Found: {opportunities.length}</p>
-
-      <ul>
-        {opportunities.map((item, index) => (
-          <li key={index}>
-            <strong>{item.title}</strong> — {item.country} — {item.skill}
-          </li>
-        ))}
-      </ul>
+      {data.length === 0 ? (
+        <p>No data found</p>
+      ) : (
+        data.map((item) => (
+          <div key={item.id}>
+            <h3>{item.title}</h3>
+          </div>
+        ))
+      )}
     </div>
   );
 }
