@@ -1,4 +1,3 @@
-cat > api-server/src/services/rssLeads.ts <<'EOF'
 import Parser from "rss-parser";
 import { supabase } from "../lib/supabase";
 
@@ -186,4 +185,3 @@ export async function fetchRSSLeads() {
     return 0;
   }
 }
-EOF

@@ -33,7 +33,7 @@ router.get("/fetch-leads", async (req, res) => {
         body: JSON.stringify({ q: query }),
       });
 
-      const data = await response.json();
+      const data: any = await response.json();
 
       const leads = (data.organic || []).map((item: any) => ({
         type: "demand",
